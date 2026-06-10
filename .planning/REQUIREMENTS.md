@@ -70,17 +70,17 @@
 
 | REQ-ID | Phase | Status |
 |--------|-------|--------|
-| EPI-01 | TBD | — |
-| EPI-02 | TBD | — |
-| EPI-03 | TBD | — |
-| EPI-04 | TBD | — |
-| EPI-05 | TBD | — |
-| SLA-01 | TBD | — |
-| SLA-02 | TBD | — |
-| SLA-03 | TBD | — |
-| SYS-01 | TBD | — |
-| SYS-02 | TBD | — |
-| SYS-03 | TBD | — |
+| EPI-01 | Phase 2 | Pending |
+| EPI-02 | Phase 2 | Pending |
+| EPI-03 | Phase 2 | Pending |
+| EPI-04 | Phase 1 | Pending |
+| EPI-05 | Phase 1 | Pending |
+| SLA-01 | Phase 2 | Pending |
+| SLA-02 | Phase 2 | Pending |
+| SLA-03 | Phase 2 | Pending |
+| SYS-01 | Phase 2 | Pending |
+| SYS-02 | Phase 1 | Pending |
+| SYS-03 | Phase 2 | Pending |
 
 ---
 *Last updated: 2026-06-11 after initialization*
