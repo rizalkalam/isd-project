@@ -5,56 +5,64 @@
 ## Languages
 
 **Primary:**
-- JavaScript (CommonJS) - Core logic in `.gemini/gsd-core/bin/lib/` and entry point `gsd-tools.cjs`.
+- JavaScript (Node.js) - Core logic of `gsd-core` and lifecycle hooks. Uses CommonJS (`.cjs`) and ESM.
 
 **Secondary:**
-- Python - Utility scripts in `scripts/` (e.g., `render_term.py`, `verify_doc_links.py`).
-- Markdown - Workflow and agent definitions in `.gemini/gsd-core/workflows/` and `.gemini/agents/`.
+- Python - Automation scripts located in `scripts/`.
+- Markdown - Agent definitions (`.claude/agents/*.md`), documentation, and planning artifacts.
+- Shell (Bash/PowerShell) - Integration hooks and orchestration scripts.
 
 ## Runtime
 
 **Environment:**
-- Node.js (v20+ assumed for GSD Core)
+- Node.js >= 20.0.0 (Required for `gsd-core` and agent CLIs)
+- Python 3.x (For utility scripts)
 
 **Package Manager:**
-- npm (minimal usage, only `package.json` with type definition)
-- Lockfile: missing
+- npm (Used for installing agent CLIs)
+- Lockfile: `package-lock.json` (Not present in root, but Node.js environment is required)
 
 ## Frameworks
 
 **Core:**
-- GSD Core - Internal framework for agent orchestration and workflow management.
+- GSD Core v1.4.3 - The primary framework for agentic workflow orchestration.
+- Claude Code (Anthropic) - AI agent framework for the Claude path.
+- Codex (OpenAI) - AI agent framework for the Codex path.
 
 **Testing:**
-- Not detected (tests may be handled via external GSD commands or scripts).
+- Not explicitly detected in root, but `gsd-core` includes `verify` and `uat` (User Acceptance Testing) workflows that leverage internal verification patterns.
 
 **Build/Dev:**
-- None detected (direct execution of scripts).
+- `gsd-tools.cjs` - Internal CLI tools for GSD management.
 
 ## Key Dependencies
 
 **Critical:**
-- None (uses built-in Node.js modules `fs`, `path`, etc.).
+- `gh` (GitHub CLI) >= 2.40 - Used for repository management, pull requests, and issues.
+- `git` >= 2.40 - Core version control system for tracking all changes.
 
 **Infrastructure:**
-- Git - Used for state tracking and commits.
-- GitHub CLI (`gh`) - Used for PR and repository management.
+- Brave Search API - Integrated for web search capabilities.
+- NPM/PyPI/Crates.io registries - Referenced for package legitimacy checks.
 
 ## Configuration
 
 **Environment:**
-- Assumed via environment variables for AI service credentials.
+- Configured via environment variables and project-specific JSON/TOML files.
+- Key configs required: `BRAVE_API_KEY` (optional, for web search), LLM API keys (handled by respective agent CLIs).
 
 **Build:**
-- None.
+- `.claude/gsd-file-manifest.json` - Tracks framework file integrity and versions.
+- `.codex/config.toml` - Orchestration configuration for Codex agents.
 
 ## Platform Requirements
 
 **Development:**
-- Windows/Linux/macOS with Node.js and Git.
+- Cross-platform: Works on Ubuntu/WSL, macOS, and Windows.
+- GitHub account and authenticated `gh` CLI required.
 
 **Production:**
-- Not applicable (CLI tool).
+- Not applicable (This is a developer toolkit/framework).
 
 ---
 

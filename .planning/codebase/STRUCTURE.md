@@ -5,64 +5,96 @@
 ## Directory Layout
 
 ```
-[project-root]/
-├── .claude/          # Claude-specific implementation
-│   ├── agents/       # Agent persona definitions
-│   └── gsd-core/     # Core logic and workflows
-├── .codex/           # Codex-specific implementation
-├── .gemini/          # Gemini-specific implementation
-├── docs/             # Global documentation
-├── scripts/          # Utility and maintenance scripts
-├── templates/        # PRD, Spec, and Roadmap templates
-└── .planning/        # Project-specific planning state (generated)
+isd-project/
+├── .claude/            # Claude Code agent and command config
+├── .codex/             # Codex agent and skill config
+├── .gemini/            # Gemini agent config
+├── .planning/          # Active GSD project state and history
+├── assets/             # Project screenshots and media
+├── docs/               # Tutorial modules and mindset docs
+├── sample-project/     # Reference implementation (Library Management)
+├── scripts/            # Internal maintenance and rendering scripts
+├── templates/          # Standard GSD document templates
+└── README.md           # Project entry documentation
 ```
 
 ## Directory Purposes
 
-**.gemini/gsd-core/bin/lib/:**
-- Purpose: Core domain logic modules.
-- Contains: CommonJS files (`.cjs`).
-- Key files: `core.cjs`, `state.cjs`, `phase.cjs`, `roadmap.cjs`.
+**[.claude]:**
+- Purpose: Configuration for the Claude Code agent platform.
+- Contains: Agents, commands, hooks, and the GSD Core workflow definitions.
+- Key files: `.claude/gsd-core/workflows/*.md`, `.claude/agents/*.md`
 
-**.gemini/gsd-core/workflows/:**
-- Purpose: Multi-step process definitions.
-- Contains: Markdown files defining GSD commands (e.g., `new-project.md`).
+**[.codex]:**
+- Purpose: Configuration for the Codex agent platform.
+- Contains: Skills and agent adapters for Codex.
+- Key files: `.codex/skills/gsd-*/SKILL.md`
 
-**.gemini/agents/:**
-- Purpose: Agent persona definitions for Gemini runtime.
-- Contains: Markdown files with instructions and tool definitions.
+**[.planning]:**
+- Purpose: Stores the source of truth for the current project state.
+- Contains: `PROJECT.md`, `ROADMAP.md`, and phase-specific artifacts.
+- Key files: `.planning/PROJECT.md`, `.planning/ROADMAP.md`
+
+**[docs]:**
+- Purpose: Educational material for students.
+- Contains: Sequential Markdown files for different learning modules.
+- Key files: `docs/00-mindset.md` to `docs/13-reviewing-ai-code.md`
+
+**[sample-project]:**
+- Purpose: A sandbox or reference implementation for learning.
+- Contains: `library-management/` with its own `.planning/` and `PROJECT_SPEC.md`.
 
 ## Key File Locations
 
 **Entry Points:**
-- `.gemini/gsd-core/bin/gsd-tools.cjs`: Main CLI entry.
+- `README.md`: Tutorial overview and setup.
+- `.claude/commands/gsd/`: Definitions for slash commands.
 
 **Configuration:**
-- `.gemini/settings.json`: Runtime settings.
-- `.gemini/gsd-install-state.json`: Installation metadata.
+- `.claude/package.json`: Basic project type config.
+- `.claude/gsd-core/VERSION`: Framework versioning.
 
-**Documentation:**
-- `docs/`: Comprehensive GSD workflow guides.
+**Core Logic:**
+- `.claude/gsd-core/workflows/`: The "executable" logic of the GSD framework.
+
+**Testing:**
+- `.claude/gsd-core/workflows/add-tests.md`: Workflow for generating tests.
+- `docs/12-verify-and-ship.md`: Guidelines for verification.
 
 ## Naming Conventions
 
 **Files:**
-- Kebab-case for workflows and agents: `new-project.md`, `gsd-codebase-mapper.md`.
-- Kebab-case for core libraries: `state-command-router.cjs`.
+- **Agents:** `gsd-[role].md` (e.g., `gsd-planner.md`)
+- **Workflows:** `kebab-case.md` (e.g., `plan-phase.md`)
+- **Documentation:** `NN-kebab-case.md` (e.g., `01-setup-environment.md`)
+- **GSD State Docs:** `UPPER_CASE.md` (e.g., `PLAN.md`, `PROJECT.md`)
 
 **Directories:**
-- Dot-prefixed for runtime environments: `.gemini`, `.claude`.
+- **Agent Platforms:** `.[platform_name]` (e.g., `.claude`)
+- **Workflows:** `kebab-case` (e.g., `gsd-core/workflows`)
 
 ## Where to Add New Code
 
-**New Core Logic:**
-- Implementation: `.gemini/gsd-core/bin/lib/`
+**New Feature (in tutorial):**
+- Primary code: Should be added under a project directory (e.g., `app/library-management/`) following the GSD process.
 
-**New Workflow:**
-- Primary code: `.gemini/gsd-core/workflows/`
+**New Agent Capability:**
+- Implementation: Add a new workflow in `.claude/gsd-core/workflows/` and a corresponding agent in `.claude/agents/`.
 
-**New Agent:**
-- Implementation: `.gemini/agents/`
+**Utilities:**
+- Shared helpers: `scripts/`
+
+## Special Directories
+
+**[.planning]:**
+- Purpose: Active project tracking.
+- Generated: Yes (by GSD commands).
+- Committed: Yes (essential for context transfer).
+
+**[.claude]:**
+- Purpose: Agent environment.
+- Generated: No (part of the framework).
+- Committed: Yes.
 
 ---
 

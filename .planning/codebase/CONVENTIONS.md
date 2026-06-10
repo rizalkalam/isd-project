@@ -5,75 +5,86 @@
 ## Naming Patterns
 
 **Files:**
-- Kebab-case for scripts and definitions: `gsd-tools.cjs`, `new-project.md`.
+- Kebab-case: `gsd-check-update.js`, `verify-doc-links.py`, `07-tech-stack.md`
 
 **Functions:**
-- camelCase for logic functions: `cmdAgentSkills`, `buildAgentSkillsBlock`.
+- JavaScript: camelCase (e.g., `parseCodeReviewFlags`, `gsd_run`)
+- Python: snake_case (standard Python PEP 8)
 
 **Variables:**
-- camelCase for local variables: `skillPath`, `validPaths`.
-- UPPER_CASE for constants: `ERROR_REASON`, `TOP_LEVEL_USAGE`.
+- JavaScript: camelCase (e.g., `stdinTimeout`, `filePath`)
+- Python: snake_case (e.g., `errors`, `target`)
 
 **Types:**
-- JavaScript (Untyped) - No formal type system detected.
+- TypeScript: PascalCase (inferred from standard TS practices and `gsd-code-fixer` mentions)
 
 ## Code Style
 
 **Formatting:**
-- Manual (Standard JS spacing observed).
-- Single quotes preferred for strings.
+- Indentation: 2 spaces for JavaScript/JSON, 4 spaces for Python (inferred from `scripts/verify_doc_links.py`).
+- Semicolons: Used in JavaScript files.
+- String Literals: Both single and double quotes observed in JS; single quotes preferred in some shell context.
 
 **Linting:**
-- None detected (no config files found).
+- Not explicitly configured in root, but mentioned in `gsd-code-reviewer` logic.
+- Standard language-specific checks (e.g., `npx tsc --noEmit` for TS, `node -c` for JS).
 
 ## Import Organization
 
 **Order:**
-1. Built-in Node.js modules (`fs`, `path`).
-2. Local project modules (`./lib/core.cjs`).
+1. Built-in modules (e.g., `const fs = require('fs');`)
+2. Third-party modules
+3. Local modules/utilities
 
 **Path Aliases:**
-- None used.
+- Not extensively detected, but relative paths are common.
 
 ## Error Handling
 
 **Patterns:**
-- Centralized error reporting via `core.error`.
-- Use of `ERROR_REASON` codes for structured errors.
+- `try-catch` blocks in JavaScript for parsing and file operations.
+- Silent fails (`process.exit(0)`) for non-critical hooks to avoid blocking the user session.
+- Informative error messages for the user when parsing fails.
+- Exit codes (`sys.exit(1)` in Python, `exit 1` in Shell) to signal failures in scripts and workflows.
 
 ## Logging
 
 **Framework:**
-- Console output (stdout/stderr).
-- Structured JSON output for queries.
+- `process.stdout.write` and `console.log` for Node.js.
+- `print` for Python.
+- `echo` for Shell scripts.
+
+**Patterns:**
+- Diagnostic logs often include a banner or specific prefix (e.g., `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`).
+- Detailed descriptions of operations in progress (e.g., `◆ Spawning code reviewer...`).
 
 ## Comments
 
 **When to Comment:**
-- Header comments for files and complex functions.
-- Inline comments for complex logic and bug references (e.g., `#3019`).
+- Top of file: Purpose, version, inputs/outputs, and usage instructions.
+- Logic-level: Explaining complex conditionals, guard clauses, and non-obvious implementation details.
 
 **JSDoc/TSDoc:**
-- Basic JSDoc used for function headers.
+- Minimal usage in existing hook files, but recommended for exported functions.
 
 ## Function Design
 
 **Size:**
-- Modular; complex logic is broken into helper functions.
+- Small to medium-sized functions preferred. Hooks are often organized as one main logic block in simple scripts.
 
 **Parameters:**
-- Uses named objects for complex parameter lists in routers.
+- Often passed as structured objects (e.g., input JSON to hooks).
 
 **Return Values:**
-- Mixed; commands often output directly to stdout.
+- Structured JSON objects for hooks and tools (e.g., `{ hookSpecificOutput: { ... } }`).
 
 ## Module Design
 
 **Exports:**
-- `module.exports` (CommonJS).
+- CommonJS (`module.exports` or `require`) for Node.js scripts.
 
 **Barrel Files:**
-- None.
+- Usage mentioned in `gsd-code-reviewer` but not found in root.
 
 ---
 
