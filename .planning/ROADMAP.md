@@ -23,8 +23,8 @@ Membangun sistem kewaspadaan dini untuk klinik dengan mengintegrasikan data reka
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Setup Analytical Database and CDC Pipeline
-- [ ] 01-02: Implement PII Redaction and Read-Only Access
+- [ ] 01-01-PLAN.md — Setup Analytical Infrastructure and Ingestion Pipeline skeleton
+- [ ] 01-02-PLAN.md — Implement Data Privacy (PII Redaction/Hashing) and Performance Optimization
 
 ### Phase 2: Analytics Dashboard & Reporting
 **Goal**: Menyajikan visualisasi tren penyakit dan efisiensi operasional kepada manajer klinik melalui dashboard interaktif.
