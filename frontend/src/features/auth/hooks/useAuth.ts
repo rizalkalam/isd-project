@@ -16,14 +16,36 @@ export const useAuth = () => {
 
       const response = await api.post('/auth/login', formData);
       const { access_token } = response.data;
-      
+
       setAccessToken(access_token);
-      // In a real app, we'd fetch the user profile here
-      setUser({ email }); 
-      return true;
+
+      // Try to decode role information from the JWT access token (if present)
+      const parseJwt = (token: string) => {
+        try {
+          const base64Url = token.split('.')[1];
+          const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+          const jsonPayload = decodeURIComponent(
+            atob(base64)
+              .split('')
+              .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+              .join('')
+          );
+          return JSON.parse(jsonPayload);
+        } catch (e) {
+          return null;
+        }
+      };
+
+      const payload = access_token ? parseJwt(access_token) : null;
+      const role = payload?.role || payload?.roles || payload?.role_name || null;
+
+      const userObj: any = { email, role };
+      // In a real app, you might fetch the full profile from /me or /profile
+      setUser(userObj);
+      return userObj;
     } catch (err: any) {
       setError(err.response?.data?.detail || 'Login failed');
-      return false;
+      return null;
     } finally {
       setIsLoading(false);
     }

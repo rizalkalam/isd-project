@@ -19,4 +19,8 @@ class Title(TitleBase, table=True):
     # Relationships
     copies: List["Copy"] = Relationship(back_populates="title", cascade_delete=True)
 
+class TitleReadWithAvailability(TitleBase):
+    id: int
+    available_copies: int
+
 from app.models.copy import Copy # Type hinting
