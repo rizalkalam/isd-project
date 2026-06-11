@@ -1,56 +1,53 @@
-# Roadmap: Sistem Epidemiologi Klinik
-
-## Overview
-
-Membangun sistem kewaspadaan dini untuk klinik dengan mengintegrasikan data rekam medis melalui pipeline analitik yang terpisah. Proyek ini akan fokus pada keamanan data (PII redaction) dan visualisasi tren penyakit (ICD-10) serta efisiensi operasional (SLA waktu tunggu).
+# Roadmap
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Data Pipeline** - Membangun pipeline CDC read-only dengan reduksi PII otomatis.
-- [ ] **Phase 2: Analytics Dashboard & Reporting** - Implementasi dashboard tren penyakit, metrik SLA, dan sistem pelaporan.
+- [ ] **Phase 1: Foundation & Catalog** - Establish secure access and collection management.
+- [ ] **Phase 2: Borrowing & Discovery** - Implement the core borrowing lifecycle and search.
+- [ ] **Phase 3: Management & Monitoring** - Provide operational oversight and user notifications.
 
 ## Phase Details
 
-### Phase 1: Foundation & Data Pipeline
-**Goal**: Membangun pipeline data yang aman dan terpisah dari sistem operasional (TPS) untuk mendukung analitik tanpa mengganggu kinerja rekam medis.
+### Phase 1: Foundation & Catalog
+**Goal**: Establish secure access and collection management.
 **Mode**: mvp
-**Depends on**: Nothing (first phase)
-**Requirements**: EPI-04, EPI-05, SYS-02
+**Depends on**: Nothing
+**Requirements**: AUTH-01, AUTH-02, AUTH-03, CAT-01, CAT-02
 **Success Criteria** (what must be TRUE):
-  1. Data dari TPS lama terduplikasi ke database analitik secara near real-time via CDC.
-  2. Database analitik tidak menyimpan informasi identitas pribadi (Nama/NIK) sesuai kebijakan privasi.
-  3. Koneksi database ke TPS dikonfigurasi secara strictly read-only untuk menjaga integritas rekam medis.
-**Plans**: 2 plans
-
-Plans:
-- [ ] 01-01-PLAN.md — Setup Analytical Infrastructure and Ingestion Pipeline skeleton
-- [ ] 01-02-PLAN.md — Implement Data Privacy (PII Redaction/Hashing) and Performance Optimization
-
-### Phase 2: Analytics Dashboard & Reporting
-**Goal**: Menyajikan visualisasi tren penyakit dan efisiensi operasional kepada manajer klinik melalui dashboard interaktif.
-**Mode**: mvp
-**Depends on**: Phase 1
-**Requirements**: EPI-01, EPI-02, EPI-03, SLA-01, SLA-02, SLA-03, SYS-01, SYS-03
-**Success Criteria** (what must be TRUE):
-  1. User dapat melihat grafik Top 10 Tren Penyakit dengan pengelompokan ICD-10 3-karakter.
-  2. User dapat memfilter dashboard berdasarkan rentang waktu mingguan atau bulanan.
-  3. Muncul indikator visual (merah) secara otomatis jika rata-rata waktu tunggu pasien > 60 menit.
-  4. User dapat mengunduh laporan analitik dalam format PDF atau Excel.
-  5. Sistem membedakan akses antara "Manajer Klinik" dan "Staf Administrasi" via RBAC.
-**Plans**: 3 plans
+  1. User can register as a student or librarian and log in securely.
+  2. Librarian can add a new book title and manage multiple physical copies of that title.
+  3. User is correctly redirected based on their role after login and can log out.
+**Plans**: TBD
 **UI hint**: yes
 
-Plans:
-- [ ] 02-01: Backend API for Epidemiology and SLA Metrics
-- [ ] 02-02: Interactive Dashboard Frontend with Recharts
-- [ ] 02-03: RBAC and Export Functionality
+### Phase 2: Borrowing & Discovery
+**Goal**: Implement the core borrowing lifecycle and search.
+**Mode**: mvp
+**Depends on**: Phase 1
+**Requirements**: CAT-03, CAT-04, CIRC-01, CIRC-02, CIRC-03, CIRC-04
+**Success Criteria** (what must be TRUE):
+  1. Student can search the catalog by title, author, or ISBN and see real-time availability.
+  2. Student can submit a borrow request, and atomic transactions prevent double-borrowing of the same copy.
+  3. Librarian can approve/reject requests and record returns, with availability updating instantly.
+**Plans**: TBD
+**UI hint**: yes
 
-## Progress
+### Phase 3: Management & Monitoring
+**Goal**: Provide operational oversight and user notifications.
+**Mode**: mvp
+**Depends on**: Phase 2
+**Requirements**: NOTIF-01, NOTIF-02, NOTIF-03
+**Success Criteria** (what must be TRUE):
+  1. Librarian can view a dashboard with key metrics: active loans, pending requests, and overdue items.
+  2. System automatically identifies and flags overdue books for librarian attention.
+  3. Student can view their current loan status and receive basic notifications on request updates.
+**Plans**: TBD
+**UI hint**: yes
 
-**Execution Order:**
-Phases execute in numeric order: 1 → 2
+## Progress Table
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Data Pipeline | 0/2 | Not started | - |
-| 2. Analytics Dashboard & Reporting | 0/3 | Not started | - |
+| 1. Foundation & Catalog | 0/0 | Not started | - |
+| 2. Borrowing & Discovery | 0/0 | Not started | - |
+| 3. Management & Monitoring | 0/0 | Not started | - |

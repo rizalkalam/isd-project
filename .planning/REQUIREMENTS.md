@@ -39,17 +39,17 @@
 
 | REQ-ID | Phase | Plan | Status |
 |--------|-------|------|--------|
-| AUTH-01 | — | — | — |
-| AUTH-02 | — | — | — |
-| AUTH-03 | — | — | — |
-| CAT-01 | — | — | — |
-| CAT-02 | — | — | — |
-| CAT-03 | — | — | — |
-| CAT-04 | — | — | — |
-| CIRC-01 | — | — | — |
-| CIRC-02 | — | — | — |
-| CIRC-03 | — | — | — |
-| CIRC-04 | — | — | — |
-| NOTIF-01 | — | — | — |
-| NOTIF-02 | — | — | — |
-| NOTIF-03 | — | — | — |
+| AUTH-01 | Phase 1 | — | Pending |
+| AUTH-02 | Phase 1 | — | Pending |
+| AUTH-03 | Phase 1 | — | Pending |
+| CAT-01 | Phase 1 | — | Pending |
+| CAT-02 | Phase 1 | — | Pending |
+| CAT-03 | Phase 2 | — | Pending |
+| CAT-04 | Phase 2 | — | Pending |
+| CIRC-01 | Phase 2 | — | Pending |
+| CIRC-02 | Phase 2 | — | Pending |
+| CIRC-03 | Phase 2 | — | Pending |
+| CIRC-04 | Phase 2 | — | Pending |
+| NOTIF-01 | Phase 3 | — | Pending |
+| NOTIF-02 | Phase 3 | — | Pending |
+| NOTIF-03 | Phase 3 | — | Pending |

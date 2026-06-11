@@ -2,18 +2,18 @@
 
 ## Project
 
-**Sistem Epidemiologi (Prediksi Tren Penyakit)**
+**Library Management System (LMS)**
 
-Sistem Epidemiologi Klinik adalah aplikasi berbasis web yang membantu klinik memprediksi tren penyakit pasien berdasarkan data pemeriksaan dan riwayat kasus. Aplikasi ini menganalisis lonjakan penyakit endemis musiman sehingga manajemen klinik dapat melakukan penanganan, persiapan logistik, dan pengaturan SDM lebih cepat dan proaktif.
+A web-based Library Management System for Universitas XYZ. It allows students to search the catalog and request borrows, while librarians manage the collection, approve requests, and monitor overdue items via a dashboard.
 
-**Core Value:** Mengubah data rekam medis mentah menjadi sistem kewaspadaan dini yang akurat untuk mencegah keterlambatan respon terhadap lonjakan kasus penyakit.
+**Core Value:** Centralizing library operations to replace paper-based logs with an efficient, transparent, and mobile-responsive digital system.
 
 ### Constraints
 
-- **Data Privacy**: Data yang ditampilkan di Dasbor MIS Manajer harus anonim (tidak menampilkan identitas pribadi seperti Nama atau NIK).
-- **Access Control**: Sistem MIS hanya bersifat read-only terhadap tabel operasional; tidak boleh mengubah data rekam medis asli.
-- **Platform**: Desktop-First Dashboard untuk optimalisasi visualisasi grafik yang padat.
-- **Data Source**: Diasumsikan staf disiplin memasukkan data secara real-time ke sistem basis data utama (TPS).
+- **Tech Stack**: FastAPI (Python) backend, React frontend, PostgreSQL database. — Team preference and university infrastructure.
+- **Infra**: Must be deployable via Docker to university servers. — Existing deployment standard.
+- **Performance**: Page and search responses must be under 2 seconds. — User experience requirement.
+- **Security**: Authentication and authorization enforced via JWT. — Data protection requirement.
 
 <!-- GSD:project-end -->
 
@@ -23,43 +23,43 @@ Sistem Epidemiologi Klinik adalah aplikasi berbasis web yang membantu klinik mem
 
 ## Languages
 
-- JavaScript (Node.js) - Core logic of `gsd-core` and lifecycle hooks. Uses CommonJS (`.cjs`) and ESM.
-- Python - Automation scripts located in `scripts/`.
+- JavaScript (Node.js) >= 20.0.0 - Core logic of `gsd-core` and lifecycle hooks in `.claude/hooks/` and `.gemini/hooks/`.
+- Python 3.x - Automation scripts located in `scripts/` (e.g., `scripts/verify_doc_links.py`).
 - Markdown - Agent definitions (`.claude/agents/*.md`), documentation, and planning artifacts.
 - Shell (Bash/PowerShell) - Integration hooks and orchestration scripts.
 
 ## Runtime
 
-- Node.js >= 20.0.0 (Required for `gsd-core` and agent CLIs)
-- Python 3.x (For utility scripts)
-- npm (Used for installing agent CLIs)
-- Lockfile: `package-lock.json` (Not present in root, but Node.js environment is required)
+- Node.js >= 20.0.0
+- Python 3.x
+- npm
+- Lockfile: Not present in root, but required for tool installation (e.g., `npx @opengsd/gsd-core@latest`).
 
 ## Frameworks
 
 - GSD Core v1.4.3 - The primary framework for agentic workflow orchestration.
 - Claude Code (Anthropic) - AI agent framework for the Claude path.
 - Codex (OpenAI) - AI agent framework for the Codex path.
-- Not explicitly detected in root, but `gsd-core` includes `verify` and `uat` (User Acceptance Testing) workflows that leverage internal verification patterns.
+- Internal GSD Verification - Leverages `verify` and `uat` (User Acceptance Testing) workflows.
+- Python scripts - `scripts/verify_doc_links.py` for documentation integrity.
 - `gsd-tools.cjs` - Internal CLI tools for GSD management.
 
 ## Key Dependencies
 
+- `git` >= 2.40 - Core version control system for tracking all changes and state.
 - `gh` (GitHub CLI) >= 2.40 - Used for repository management, pull requests, and issues.
-- `git` >= 2.40 - Core version control system for tracking all changes.
-- Brave Search API - Integrated for web search capabilities.
-- NPM/PyPI/Crates.io registries - Referenced for package legitimacy checks.
+- Brave Search API - Integrated for web search capabilities during research phases.
 
 ## Configuration
 
 - Configured via environment variables and project-specific JSON/TOML files.
 - Key configs required: `BRAVE_API_KEY` (optional, for web search), LLM API keys (handled by respective agent CLIs).
 - `.claude/gsd-file-manifest.json` - Tracks framework file integrity and versions.
-- `.codex/config.toml` - Orchestration configuration for Codex agents.
+- `settings.local.json` - Configures agent lifecycle hooks.
 
 ## Platform Requirements
 
-- Cross-platform: Works on Ubuntu/WSL, macOS, and Windows.
+- Cross-platform support: Windows (via WSL/PowerShell), macOS, and Linux.
 - GitHub account and authenticated `gh` CLI required.
 - Not applicable (This is a developer toolkit/framework).
 
@@ -72,55 +72,49 @@ Sistem Epidemiologi Klinik adalah aplikasi berbasis web yang membantu klinik mem
 ## Naming Patterns
 
 - Kebab-case: `gsd-check-update.js`, `verify-doc-links.py`, `07-tech-stack.md`
-- JavaScript: camelCase (e.g., `parseCodeReviewFlags`, `gsd_run`)
-- Python: snake_case (standard Python PEP 8)
-- JavaScript: camelCase (e.g., `stdinTimeout`, `filePath`)
-- Python: snake_case (e.g., `errors`, `target`)
-- TypeScript: PascalCase (inferred from standard TS practices and `gsd-code-fixer` mentions)
+- Markdown Docs: UPPERCASE for codebase docs (`STACK.md`, `ARCHITECTURE.md`), kebab-case for guides.
+- JavaScript: camelCase (e.g., `parseCodeReviewFlags`, `gsd_run`, `toPosixPath`)
+- Python: snake_case (e.g., `verify_links`)
+- JavaScript: camelCase (e.g., `stdinTimeout`, `filePath`, `isFound`)
+- Python: snake_case (e.g., `errors`, `target`, `md_file`)
+- JavaScript (CommonJS): No explicit types, but PascalCase inferred for potential classes or constructors if used (rare in this codebase).
 
 ## Code Style
 
-- Indentation: 2 spaces for JavaScript/JSON, 4 spaces for Python (inferred from `scripts/verify_doc_links.py`).
-- Semicolons: Used in JavaScript files.
-- String Literals: Both single and double quotes observed in JS; single quotes preferred in some shell context.
-- Not explicitly configured in root, but mentioned in `gsd-code-reviewer` logic.
-- Standard language-specific checks (e.g., `npx tsc --noEmit` for TS, `node -c` for JS).
+- Indentation: 2 spaces for JavaScript/JSON/Markdown, 4 spaces for Python.
+- Semicolons: Required and used in JavaScript files.
+- String Literals: Both single (`'`) and double (`"`) quotes observed in JS; double quotes common for JSON keys and strings. Single quotes preferred in some shell context.
+- Not explicitly configured in root (no `.eslintrc` or `biome.json` found).
+- Standard language-specific checks recommended: `node -c {file}` for JS syntax check.
 
 ## Import Organization
 
-- Not extensively detected, but relative paths are common.
+- Not detected; relative paths are used (e.g., `require('./lib/core.cjs')`).
 
 ## Error Handling
 
-- `try-catch` blocks in JavaScript for parsing and file operations.
+- `try-catch` blocks in JavaScript for parsing, file operations, and CLI command execution.
 - Silent fails (`process.exit(0)`) for non-critical hooks to avoid blocking the user session.
-- Informative error messages for the user when parsing fails.
-- Exit codes (`sys.exit(1)` in Python, `exit 1` in Shell) to signal failures in scripts and workflows.
+- Exit codes (`sys.exit(1)` in Python, `exit 1` in Shell, `process.exit(1)` in Node) to signal failures in scripts and workflows.
+- Informative error messages with specific prefixes (e.g., `ERROR:`, `⚠️`, `🛑`).
 
 ## Logging
 
-- `process.stdout.write` and `console.log` for Node.js.
-- `print` for Python.
-- `echo` for Shell scripts.
-- Diagnostic logs often include a banner or specific prefix (e.g., `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`).
-- Detailed descriptions of operations in progress (e.g., `◆ Spawning code reviewer...`).
+- Use `process.stdout.write` for fine-grained control or banners.
+- Use `console.log` for standard informational output.
+- Diagnostic logs often include a banner or specific separator (e.g., `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`).
+- Prefix symbols used for status: `◆` for progress, `✓` for success, `⚠️` for warning.
 
 ## Comments
 
-- Top of file: Purpose, version, inputs/outputs, and usage instructions.
+- Top of file: Purpose, usage instructions, and dependencies.
 - Logic-level: Explaining complex conditionals, guard clauses, and non-obvious implementation details.
-- Minimal usage in existing hook files, but recommended for exported functions.
+- Workflow files (`.md`): `<purpose>` and `<step>` tags used for organization.
+- Minimal usage in existing hook files, but present in some `gsd-core` files for function descriptions.
 
 ## Function Design
 
-- Small to medium-sized functions preferred. Hooks are often organized as one main logic block in simple scripts.
-- Often passed as structured objects (e.g., input JSON to hooks).
-- Structured JSON objects for hooks and tools (e.g., `{ hookSpecificOutput: { ... } }`).
-
 ## Module Design
-
-- CommonJS (`module.exports` or `require`) for Node.js scripts.
-- Usage mentioned in `gsd-code-reviewer` but not found in root.
 
 <!-- GSD:conventions-end -->
 
@@ -138,74 +132,90 @@ Sistem Epidemiologi Klinik adalah aplikasi berbasis web yang membantu klinik mem
 
 | Component | Responsibility | File |
 |-----------|----------------|------|
-| **Command Interface** | Provides user entry points for lifecycle phases. | `.claude/commands/` |
-| **Workflow Engine** | Orchestrates tasks using Markdown-defined logic. | `.claude/gsd-core/workflows/` |
-| **Specialized Agents** | Perform specific roles (Planner, Executor, Verifier). | `.claude/agents/` |
-| **Skill Adapters** | Maps generic workflow commands to platform-specific tools. | `.codex/skills/` |
-| **State Management** | Tracks project progress, requirements, and plans. | `.planning/` |
+| Agents | Orchestrate the GSD process, interface with the user, and execute workflows. | `.claude/agents/*.md` |
+| Workflows | Define the step-by-step procedures for each phase (discuss, plan, execute, verify). | `.claude/gsd-core/workflows/*.md` |
+| gsd-tools | Centralized CLI utility for all GSD workflow operations (state, roadmap, phase management). | `.claude/gsd-core/bin/gsd-tools.cjs` |
+| Core Library | Specialized logic for state management, git operations, and project artifacts. | `.claude/gsd-core/bin/lib/*.cjs` |
+| State | Tracks the current progress, active phase, and project metadata. | `.planning/STATE.md` |
+| Roadmap | Defines the project milestones and phases. | `ROADMAP.md` |
 
 ## Pattern Overview
 
-- **Spec-First:** Workflows mandate discussion and planning before execution.
-- **Persona-Based:** Tasks are delegated to specialized agents with distinct system prompts.
-- **Markdown-Driven:** Logic and instructions are defined in human-readable Markdown files.
+- **Workflow-Driven**: Agent behavior is governed by markdown-based workflows that describe steps and decision points.
+- **CLI-Augmented**: Agents rely on a specialized CLI (`gsd-tools.cjs`) to perform complex filesystem and git operations safely and consistently.
+- **File-Based State**: The system's source of truth is stored in markdown and JSON files within the `.planning/` directory, allowing for transparency and git-tracking.
 
 ## Layers
 
-- Purpose: Entry point for user interaction.
-- Location: `.claude/commands/`
-- Contains: Slash command definitions.
-- Depends on: Workflow Layer.
-- Used by: User.
-- Purpose: Defines the sequence of steps for a GSD phase.
-- Location: `.claude/gsd-core/workflows/`
-- Contains: Markdown-based instruction sets and tool call patterns.
-- Depends on: Agent Layer.
-- Used by: Command Layer.
-- Purpose: Defines the specialized behavior and knowledge of AI agents.
+- Purpose: Provides specialized personas for different parts of the SDLC.
 - Location: `.claude/agents/`
-- Contains: Markdown system prompts.
-- Depends on: Infrastructure (LLM runtime).
+- Contains: System instructions and role-specific constraints.
+- Depends on: Workflow Layer.
+- Used by: User / LLM.
+- Purpose: Defines the business logic of the GSD process.
+- Location: `.claude/gsd-core/workflows/`
+- Contains: Procedural markdown files with embedded shell commands.
+- Depends on: Tooling Layer.
+- Used by: Agent Layer.
+- Purpose: Automates repetitive and complex tasks.
+- Location: `.claude/gsd-core/bin/`
+- Contains: Node.js scripts and libraries.
+- Depends on: Filesystem/OS.
 - Used by: Workflow Layer.
 
 ## Data Flow
 
-### Primary Request Path (Phase Execution)
+### Primary Request Path (Phase Operation)
 
 ### State Management:
 
-- **Project State:** Managed in `.planning/PROJECT.md` and `.planning/ROADMAP.md`.
-- **Phase State:** Each phase has its own directory in `.planning/phases/`.
+- Handled primarily by `bin/lib/state.cjs` and `bin/lib/planning-workspace.cjs`.
+- Uses a file-locking mechanism (`_heldStateLocks` in `state.cjs`) to prevent concurrent modifications during the same process.
+- Frontmatter in `.planning/STATE.md` serves as the primary data store for active project parameters.
 
 ## Key Abstractions
 
-- Purpose: Encapsulates a high-level capability (e.g., "Add Tests").
-- Examples: `.codex/skills/gsd-add-tests/`
-- Pattern: Adapter pattern (translating workflow commands to tool calls).
-- Purpose: A scripted sequence of agent interactions and tool uses.
-- Examples: `.claude/gsd-core/workflows/execute-phase.md`
-- Pattern: Scripting/Orchestration.
+- Purpose: Validation checkpoints that control workflow progression.
+- Examples: `.claude/gsd-core/references/gates.md`
+- Pattern: Pre-flight, Revision, Escalation, and Abort.
+- Purpose: Incremental units of work defined in the roadmap.
+- Examples: `.planning/phases/NN-{name}/`
+- Pattern: Decimal numbering (e.g., 01.10) for insertion and sequencing.
+- Purpose: Isolated environments for executing plans without polluting the main branch.
+- Examples: `bin/lib/worktree-safety.cjs`
+- Pattern: Automated creation and cleanup of git worktrees.
 
 ## Entry Points
 
-- Location: `.claude/commands/gsd/`
-- Triggers: User input in the agent terminal.
-- Responsibilities: Initialize the appropriate workflow with user arguments.
+- Location: `.claude/gsd-core/bin/gsd-tools.cjs`
+- Triggers: Shell commands from Agents or Workflows.
+- Responsibilities: Dispatches commands to specialized libraries.
+- Location: `CLAUDE.md`
+- Triggers: Initial project load by the agent.
+- Responsibilities: Provides high-level commands and environment context.
 
 ## Architectural Constraints
 
-- **Platform Dependency:** Agent configurations and command formats are platform-specific (`.claude` vs `.codex`).
-- **Markdown Logic:** Workflows rely on the LLM's ability to follow complex instructions embedded in Markdown.
-- **Git Integration:** Workflows often assume a Git repository structure and use Git hooks (`.claude/hooks/`).
+- **Threading:** Single-threaded Node.js execution for the CLI.
+- **Global state:** No in-memory global state across agent turns; all persistence is in `.planning/`.
+- **File System Dependency:** Heavily reliant on POSIX-style paths (handled by `toPosixPath` in `core.cjs`).
+- **Git Integration:** Requires an initialized git repository for most operations (tracked via `.git`).
 
 ## Anti-Patterns
 
-### Inline Execution without Planning
+### Checkpoint Human-Automation
+
+### Vague Task Definitions
+
+### Reflexive SUMMARY Chaining
 
 ## Error Handling
 
-- **Verification Loops:** Workflows (like `plan-phase`) include a verification step where a different agent checks the output.
-- **Checkpoints:** State is saved at key steps to allow for recovery or manual correction.
+- **Pre-flight Gates**: Check preconditions (e.g., file existence) before starting.
+- **Revision Gates**: Evaluate output quality and loop back to the agent if needed (max 3 iterations).
+- **Escalation Gates**: Pause for human input when automated resolution fails.
+
+## Cross-Cutting Concerns
 
 <!-- GSD:architecture-end -->
 
