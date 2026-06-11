@@ -65,6 +65,6 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Catalog | 0/2 | Not started | - |
+| 1. Foundation & Catalog | 0/2 | Planned    |  |
 | 2. Borrowing & Discovery | 0/0 | Not started | - |
 | 3. Management & Monitoring | 0/0 | Not started | - |
