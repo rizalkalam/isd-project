@@ -1,5 +1,5 @@
 {
-  "mode": "yolo",
+  "mode": "interactive",
   "granularity": "coarse",
   "parallelization": true,
   "commit_docs": true,
@@ -9,8 +9,7 @@
     "plan_check": true,
     "verifier": true,
     "nyquist_validation": false,
-    "auto_advance": true,
-    "_auto_chain_active": true
+    "auto_advance": false
   },
   "plan_review": {
     "source_grounding": true
