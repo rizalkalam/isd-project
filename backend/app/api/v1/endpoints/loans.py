@@ -1,5 +1,5 @@
 from typing import List
-from datetime import datetime
+from datetime import datetime, timedelta
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
@@ -121,6 +121,8 @@ async def update_loan_status(
             copy.status = CopyStatus.AVAILABLE
             session.add(copy)
 
+    if new_status == LoanStatus.ACTIVE:
+        loan.due_date = datetime.utcnow() + timedelta(days=14)
     loan.status = new_status
     loan.updated_at = datetime.utcnow()
     session.add(loan)

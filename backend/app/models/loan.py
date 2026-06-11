@@ -31,6 +31,7 @@ class LoanRead(LoanBase):
     id: int
     created_at: datetime
     updated_at: datetime
+    due_date: Optional[datetime] = None
 
 
 class LoanReadWithDetails(SQLModel):
@@ -44,9 +45,11 @@ class LoanReadWithDetails(SQLModel):
     book_title: str
     book_author: str
     student_email: str
+    due_date: Optional[datetime] = None
 
 
 class Loan(LoanBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     created_at: datetime = Field(default_factory=datetime.utcnow)
     updated_at: datetime = Field(default_factory=datetime.utcnow)
+    due_date: Optional[datetime] = Field(default=None)
