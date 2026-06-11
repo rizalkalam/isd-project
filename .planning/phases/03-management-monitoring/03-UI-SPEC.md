@@ -44,9 +44,10 @@ Declared values (must be multiples of 4):
 | 3xl | 64px | Page-level spacing (reserved, not currently used in new pages) |
 
 Exceptions:
-- Stat cards use 40px top padding on `.page-dashboard` (from index.css `.page-dashboard` rule — 40px).
-- Stats grid gap: 18px (closest to md, intentional design exception in existing `.stats-grid`).
+- `.page-dashboard` top padding: mapped to 32px (`pt-8`) — the existing index.css rule uses 40px but new Dashboard.tsx uses `pt-8` inline Tailwind override to stay on the standard scale.
 - Container max-width: `max-w-6xl` (same as existing Loans.tsx). Dashboard uses same constraint.
+
+No non-standard spacing exceptions remain. The former 18px stats-grid gap is replaced with 16px (`gap-4`). The 40px page-dashboard top padding is replaced with 32px (`pt-8`).
 
 Source: `frontend/src/index.css`, `frontend/src/pages/admin/Loans.tsx`, `frontend/src/pages/admin/Inventory.tsx`
 
@@ -56,16 +57,19 @@ Source: `frontend/src/index.css`, `frontend/src/pages/admin/Loans.tsx`, `fronten
 
 | Role | Size | Weight | Line Height | Tailwind |
 |------|------|--------|-------------|---------|
-| Body | 14px (text-sm) | 400 (regular) | 1.5 | `text-sm` |
 | Label / Caption | 12px (text-xs) | 600 (semibold) | 1.4 | `text-xs font-semibold` |
-| Subheading | 16px (text-base) | 500 (medium) | 1.5 | `text-base font-medium` |
-| Heading (page h1) | 30px (text-3xl) | 700 (bold) | 1.2 | `text-3xl font-bold` |
+| Body | 14px (text-sm) | 400 (regular) | 1.5 | `text-sm` |
+| Subheading / Metric number | 20px (text-xl) | 600 (semibold) | 1.4 | `text-xl font-semibold` |
+| Heading (page h1) | 30px (text-3xl) | 600 (semibold) | 1.2 | `text-3xl font-semibold` |
+
+Declared sizes: 12px, 14px, 20px, 30px (4 total — maximum).
+Declared weights: 400 (regular), 600 (semibold) (2 total — maximum).
 
 Notes:
-- Metric card large number: `text-2xl font-semibold` (from `CardTitle` in card.tsx — 24px, semibold).
-- Stat value class `.stat-value` in index.css uses 2.25rem / 800 weight. New metric cards use `CardTitle` (text-2xl / semibold) to stay consistent with component API rather than raw CSS.
-- Table column headers: `text-sm font-medium text-slate-600` (from Loans.tsx pattern).
-- Page subtitle / description: `text-slate-500` at inherited body size (14–16px).
+- Metric card large number: use `text-xl font-semibold` (20px, weight 600). The `CardTitle` default of `text-2xl` is overridden here to stay within the 4-size constraint.
+- Stat value class `.stat-value` in index.css uses 2.25rem / 800 weight — existing global CSS is not changed, but new Dashboard metric cards use `text-xl font-semibold` via inline Tailwind.
+- Table column headers: `text-sm font-semibold text-slate-600` (weight 600, not medium 500).
+- Page subtitle / description: `text-sm text-slate-500` (14px, weight 400).
 
 Source: `frontend/src/components/ui/card.tsx`, `frontend/src/pages/admin/Loans.tsx`, `frontend/src/index.css`
 
@@ -124,7 +128,7 @@ Layout structure:
 ```
 <div class="container mx-auto p-6 max-w-6xl">
   <header class="mb-8">                     ← page header (h1 + subtitle)
-  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">  ← 4 metric cards
+  <section class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">  ← 4 metric cards (gap-4 = 16px)
   <section>                                  ← loans table with filter tabs
     <div class="flex gap-2 mb-4">           ← filter button row (ALL/PENDING/ACTIVE/OVERDUE)
     <div class="rounded-xl border overflow-hidden">  ← table container
