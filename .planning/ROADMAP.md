@@ -20,9 +20,9 @@
   2. Librarian can add a new book title and manage multiple physical copies of that title.
   3. User is correctly redirected based on their role after login and can log out.
 
-**Plans**: 2 plans
+**Plans**: 3 plans
 **UI hint**: yes
-Plans:
+Plans:
 **Wave 1**
 
 - [x] 01-01-PLAN.md — Foundation & Auth Skeleton
@@ -30,6 +30,10 @@
 **Wave 2** *(blocked on Wave 1 completion)*
 
 - [x] 01-02-PLAN.md — Catalog & Inventory Slice
+
+**Wave 3** *(Gap Closure)*
+
+- [ ] 01-03-PLAN.md — Title Update/Delete (CAT-01 Gap)
 
 ### Phase 2: Borrowing & Discovery
 
@@ -65,6 +69,6 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Catalog | 2/2 | Complete   | 2026-06-11 |
+| 1. Foundation & Catalog | 2/3 | Gaps found | 2026-06-11 |
 | 2. Borrowing & Discovery | 0/0 | Not started | - |
 | 3. Management & Monitoring | 0/0 | Not started | - |
