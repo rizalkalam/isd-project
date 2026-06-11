@@ -1,26 +1,26 @@
 # Technology Stack
 
-**Analysis Date:** 2026-06-10
+**Analysis Date:** 2026-06-11
 
 ## Languages
 
 **Primary:**
-- JavaScript (Node.js) - Core logic of `gsd-core` and lifecycle hooks. Uses CommonJS (`.cjs`) and ESM.
+- JavaScript (Node.js) >= 20.0.0 - Core logic of `gsd-core` and lifecycle hooks in `.claude/hooks/` and `.gemini/hooks/`.
 
 **Secondary:**
-- Python - Automation scripts located in `scripts/`.
+- Python 3.x - Automation scripts located in `scripts/` (e.g., `scripts/verify_doc_links.py`).
 - Markdown - Agent definitions (`.claude/agents/*.md`), documentation, and planning artifacts.
 - Shell (Bash/PowerShell) - Integration hooks and orchestration scripts.
 
 ## Runtime
 
 **Environment:**
-- Node.js >= 20.0.0 (Required for `gsd-core` and agent CLIs)
-- Python 3.x (For utility scripts)
+- Node.js >= 20.0.0
+- Python 3.x
 
 **Package Manager:**
-- npm (Used for installing agent CLIs)
-- Lockfile: `package-lock.json` (Not present in root, but Node.js environment is required)
+- npm
+- Lockfile: Not present in root, but required for tool installation (e.g., `npx @opengsd/gsd-core@latest`).
 
 ## Frameworks
 
@@ -30,7 +30,8 @@
 - Codex (OpenAI) - AI agent framework for the Codex path.
 
 **Testing:**
-- Not explicitly detected in root, but `gsd-core` includes `verify` and `uat` (User Acceptance Testing) workflows that leverage internal verification patterns.
+- Internal GSD Verification - Leverages `verify` and `uat` (User Acceptance Testing) workflows.
+- Python scripts - `scripts/verify_doc_links.py` for documentation integrity.
 
 **Build/Dev:**
 - `gsd-tools.cjs` - Internal CLI tools for GSD management.
@@ -38,12 +39,11 @@
 ## Key Dependencies
 
 **Critical:**
+- `git` >= 2.40 - Core version control system for tracking all changes and state.
 - `gh` (GitHub CLI) >= 2.40 - Used for repository management, pull requests, and issues.
-- `git` >= 2.40 - Core version control system for tracking all changes.
 
 **Infrastructure:**
-- Brave Search API - Integrated for web search capabilities.
-- NPM/PyPI/Crates.io registries - Referenced for package legitimacy checks.
+- Brave Search API - Integrated for web search capabilities during research phases.
 
 ## Configuration
 
@@ -53,12 +53,12 @@
 
 **Build:**
 - `.claude/gsd-file-manifest.json` - Tracks framework file integrity and versions.
-- `.codex/config.toml` - Orchestration configuration for Codex agents.
+- `settings.local.json` - Configures agent lifecycle hooks.
 
 ## Platform Requirements
 
 **Development:**
-- Cross-platform: Works on Ubuntu/WSL, macOS, and Windows.
+- Cross-platform support: Windows (via WSL/PowerShell), macOS, and Linux.
 - GitHub account and authenticated `gh` CLI required.
 
 **Production:**
@@ -66,4 +66,4 @@
 
 ---
 
-*Stack analysis: 2026-06-10*
+*Stack analysis: 2026-06-11*

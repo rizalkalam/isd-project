@@ -1,82 +1,76 @@
 # External Integrations
 
-**Analysis Date:** 2026-06-10
+**Analysis Date:** 2026-06-11
 
 ## APIs & External Services
 
-**AI LLM Providers:**
-- **Anthropic (Claude)** - Core agent brain for the Claude workflow path.
-  - SDK/Client: `claude` (Claude Code CLI)
-  - Auth: Handled via `claude auth`
-- **OpenAI (Codex)** - Core agent brain for the Codex workflow path.
-  - SDK/Client: `codex` CLI
-  - Auth: API key (usually `OPENAI_API_KEY`)
+**AI Agents:**
+- Anthropic Claude API - Powering Claude Code.
+- OpenAI API - Powering Codex.
 
-**Search & Information:**
-- **Brave Search API** - Used for web search capabilities during research phases.
-  - SDK/Client: Native `fetch` in Node.js
-  - Auth: `BRAVE_API_KEY`
+**Search:**
+- Brave Search API - Used for web research during `plan` and `discuss` phases.
+  - SDK/Client: `fetch` via `gsd-tools.cjs`.
+  - Auth: `BRAVE_API_KEY`.
 
-**Package Ecosystems:**
-- **NPM Registry** - Checked for package legitimacy and metadata.
-- **PyPI** - Checked for Python package metadata.
-- **Crates.io** - Checked for Rust crate metadata.
+**Version Control:**
+- GitHub API - Used for repository management, PRs, and issues.
+  - SDK/Client: `gh` (GitHub CLI).
+  - Auth: `gh auth login`.
 
 ## Data Storage
 
 **Databases:**
-- **Local Filesystem** - Primary state storage. All planning, state, and history artifacts are stored as files in `.planning/`.
-  - Client: Native `node:fs`
+- None (Filesystem-based state management).
 
 **File Storage:**
-- **Local filesystem only** - GSD Core manages all artifacts on the local disk within the project directory.
+- Local filesystem only - Primary storage for `.planning/` artifacts and project source.
+- Git - Distributed versioned storage.
 
 **Caching:**
-- **Local JSON snapshots** - Used for performance and drift detection.
+- None.
 
 ## Authentication & Identity
 
 **Auth Provider:**
-- **GitHub** - Central identity and collaboration platform.
-  - Implementation: Authenticated via GitHub CLI (`gh auth login`).
-- **Tool-specific Auth** - Claude Code and Codex manage their own sessions via their respective CLIs.
+- GitHub (via `gh` CLI) - For repository access and collaboration.
+- API Key-based - For LLMs and search services.
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- **None** - Errors are logged to the console and captured in `discussion-log.md` or `.gsd-session-report.md`.
+- None.
 
 **Logs:**
-- **Markdown-based logs** - Every session and phase has associated logs:
-  - `discussion-log.md`
-  - `.gsd-session-report.md`
-  - `VERIFICATION.md`
+- Console-based logging via `gsd-core` commands and hooks.
+- Markdown reports: Verification and UAT reports saved to `.planning/phases/`.
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- **Not applicable** - This is a development toolkit. However, it supports projects deploying to Vercel, Render, Railway, and Supabase.
+- GitHub - Hosting the repository and tutorial content.
 
 **CI Pipeline:**
-- **GitHub Actions** - Commonly used with GSD projects for automated verification and shipping.
+- GitHub Actions - Standard GSD Core repositories use GitHub Actions for workflow automation and verification.
 
 ## Environment Configuration
 
 **Required env vars:**
-- `BRAVE_API_KEY` (optional, enables web search)
-- `GSD_WEBSEARCH_TIMEOUT_MS` (optional, defaults to 10000)
+- `BRAVE_API_KEY` - Required for web search functionality.
+- `ANTHROPIC_API_KEY` - Used by Claude Code.
+- `OPENAI_API_KEY` - Used by Codex.
 
 **Secrets location:**
-- Environment variables or tool-specific auth stores (e.g., `gh` config).
+- Environment variables or `~/.gsd/` local files (e.g., `~/.gsd/brave_api_key`).
 
 ## Webhooks & Callbacks
 
 **Incoming:**
-- **None**
+- None.
 
 **Outgoing:**
-- **GitHub API** - Triggered via `gh` CLI for PR creation, issue updates, etc.
+- Agent Lifecycle Hooks - Scripts in `.claude/hooks/` and `.gemini/hooks/` triggered by agent CLI events (e.g., `SessionStart`, `PostToolUse`).
 
 ---
 
-*Integration audit: 2026-06-10*
+*Integration audit: 2026-06-11*

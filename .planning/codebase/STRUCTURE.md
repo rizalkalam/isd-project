@@ -1,101 +1,108 @@
 # Codebase Structure
 
-**Analysis Date:** 2026-06-10
+**Analysis Date:** 2026-06-11
 
 ## Directory Layout
 
 ```
-isd-project/
-├── .claude/            # Claude Code agent and command config
-├── .codex/             # Codex agent and skill config
-├── .gemini/            # Gemini agent config
-├── .planning/          # Active GSD project state and history
-├── assets/             # Project screenshots and media
-├── docs/               # Tutorial modules and mindset docs
-├── sample-project/     # Reference implementation (Library Management)
-├── scripts/            # Internal maintenance and rendering scripts
-├── templates/          # Standard GSD document templates
-└── README.md           # Project entry documentation
+[project-root]/
+├── .claude/         # Claude-specific agent configuration and core logic
+│   ├── agents/      # Agent definition files (.md)
+│   ├── commands/    # Custom command definitions
+│   ├── gsd-core/    # Core GSD system (bin, workflows, templates)
+│   └── hooks/       # System and git hooks
+├── .codex/          # Codex-specific agent configuration (mirrors .claude)
+├── .gemini/         # Gemini-specific agent configuration (mirrors .claude)
+├── docs/            # GSD system documentation for users
+├── templates/       # Root-level templates for new GSD projects
+├── sample-project/  # Example implementation of a GSD project
+├── scripts/         # Internal utility and maintenance scripts
+├── .planning/       # (Generated) Project-specific planning artifacts
+└── CLAUDE.md        # Entry point and command reference for agents
 ```
 
 ## Directory Purposes
 
-**[.claude]:**
-- Purpose: Configuration for the Claude Code agent platform.
-- Contains: Agents, commands, hooks, and the GSD Core workflow definitions.
-- Key files: `.claude/gsd-core/workflows/*.md`, `.claude/agents/*.md`
+**.claude/agents/:**
+- Purpose: Defines the roles and system instructions for Claude-based GSD agents.
+- Contains: Markdown files for each agent type.
+- Key files: `gsd-planner.md`, `gsd-executor.md`, `gsd-verifier.md`.
 
-**[.codex]:**
-- Purpose: Configuration for the Codex agent platform.
-- Contains: Skills and agent adapters for Codex.
-- Key files: `.codex/skills/gsd-*/SKILL.md`
+**.claude/gsd-core/bin/:**
+- Purpose: Houses the CLI tool and the supporting logic libraries.
+- Contains: `.cjs` JavaScript files (Node.js).
+- Key files: `gsd-tools.cjs`, `lib/state.cjs`, `lib/roadmap.cjs`, `lib/core.cjs`.
 
-**[.planning]:**
-- Purpose: Stores the source of truth for the current project state.
-- Contains: `PROJECT.md`, `ROADMAP.md`, and phase-specific artifacts.
-- Key files: `.planning/PROJECT.md`, `.planning/ROADMAP.md`
+**.claude/gsd-core/workflows/:**
+- Purpose: Step-by-step procedure guides for agents.
+- Contains: Markdown files that define phase logic.
+- Key files: `plan-phase.md`, `execute-phase.md`, `discuss-phase.md`.
 
-**[docs]:**
-- Purpose: Educational material for students.
-- Contains: Sequential Markdown files for different learning modules.
-- Key files: `docs/00-mindset.md` to `docs/13-reviewing-ai-code.md`
+**.claude/gsd-core/templates/:**
+- Purpose: Standard templates used by the system to scaffold new files.
+- Contains: Markdown and JSON templates.
+- Key files: `ROADMAP.md`, `STATE.md`, `PLAN.md`.
 
-**[sample-project]:**
-- Purpose: A sandbox or reference implementation for learning.
-- Contains: `library-management/` with its own `.planning/` and `PROJECT_SPEC.md`.
+**.claude/gsd-core/references/:**
+- Purpose: Knowledge base and behavioral guidelines for agents.
+- Contains: Instructional markdown files.
+- Key files: `gates.md`, `planner-antipatterns.md`, `verification-patterns.md`.
 
 ## Key File Locations
 
 **Entry Points:**
-- `README.md`: Tutorial overview and setup.
-- `.claude/commands/gsd/`: Definitions for slash commands.
+- `CLAUDE.md`: Main command reference and project overview for Claude.
+- `.claude/gsd-core/bin/gsd-tools.cjs`: Primary CLI utility.
 
 **Configuration:**
-- `.claude/package.json`: Basic project type config.
-- `.claude/gsd-core/VERSION`: Framework versioning.
+- `.planning/config.json`: Project-specific GSD configuration (generated).
+- `.claude/gsd-core/bin/shared/config-schema.manifest.json`: Configuration schema.
 
 **Core Logic:**
-- `.claude/gsd-core/workflows/`: The "executable" logic of the GSD framework.
+- `.claude/gsd-core/bin/lib/core.cjs`: Shared internal helpers.
+- `.claude/gsd-core/bin/lib/state.cjs`: State machine logic.
 
 **Testing:**
-- `.claude/gsd-core/workflows/add-tests.md`: Workflow for generating tests.
-- `docs/12-verify-and-ship.md`: Guidelines for verification.
+- `.claude/gsd-core/bin/lib/verify.cjs`: Verification logic for project deliverables.
 
 ## Naming Conventions
 
 **Files:**
-- **Agents:** `gsd-[role].md` (e.g., `gsd-planner.md`)
-- **Workflows:** `kebab-case.md` (e.g., `plan-phase.md`)
-- **Documentation:** `NN-kebab-case.md` (e.g., `01-setup-environment.md`)
-- **GSD State Docs:** `UPPER_CASE.md` (e.g., `PLAN.md`, `PROJECT.md`)
+- Agent definitions: `gsd-{role}.md` (e.g., `gsd-planner.md`)
+- Library components: `{noun}.cjs` (e.g., `roadmap.cjs`)
+- Workflows: `{action}-phase.md` or `{action}.md` (e.g., `plan-phase.md`)
 
 **Directories:**
-- **Agent Platforms:** `.[platform_name]` (e.g., `.claude`)
-- **Workflows:** `kebab-case` (e.g., `gsd-core/workflows`)
+- Phase directories (in `.planning/`): `NN-{kebab-case-name}` (e.g., `01-foundation`)
+- Milestone archives: `vX.Y-phases`
 
 ## Where to Add New Code
 
-**New Feature (in tutorial):**
-- Primary code: Should be added under a project directory (e.g., `app/library-management/`) following the GSD process.
+**New Agent:**
+- Implementation: Add a new `.md` file to `.claude/agents/`.
 
-**New Agent Capability:**
-- Implementation: Add a new workflow in `.claude/gsd-core/workflows/` and a corresponding agent in `.claude/agents/`.
+**New Workflow Step:**
+- Implementation: Modify the relevant `.md` file in `.claude/gsd-core/workflows/`.
 
-**Utilities:**
-- Shared helpers: `scripts/`
+**New CLI Command:**
+- Library logic: Add or update a `.cjs` file in `.claude/gsd-core/bin/lib/`.
+- CLI Routing: Update the command dispatcher in `.claude/gsd-core/bin/gsd-tools.cjs`.
+
+**New Global Template:**
+- Implementation: Add to `.claude/gsd-core/templates/` (or the root `templates/` for initial project setup).
 
 ## Special Directories
 
-**[.planning]:**
-- Purpose: Active project tracking.
-- Generated: Yes (by GSD commands).
-- Committed: Yes (essential for context transfer).
+**.planning/:**
+- Purpose: Contains all project-specific GSD state and artifacts.
+- Generated: Yes (during `/gsd:new-project`).
+- Committed: Yes (source of truth for progress).
 
-**[.claude]:**
-- Purpose: Agent environment.
-- Generated: No (part of the framework).
-- Committed: Yes.
+**node_modules/:**
+- Purpose: Standard Node.js dependencies (if any, typically excluded from GSD mapping).
+- Generated: Yes.
+- Committed: No.
 
 ---
 
-*Structure analysis: 2026-06-10*
+*Structure analysis: 2026-06-11*

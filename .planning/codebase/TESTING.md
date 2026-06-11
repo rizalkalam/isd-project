@@ -1,118 +1,161 @@
 # Testing Patterns
 
-**Analysis Date:** 2026-06-10
+**Analysis Date:** 2026-06-11
 
 ## Test Framework
 
 **Runner:**
-- JavaScript/TypeScript: `Jest` or `Vitest` (suggested by naming conventions and skill docs).
-- Python: `pytest` (referenced in `07-tech-stack.md`).
-- E2E: `Playwright` (explicitly used in `verify-work.md`).
+- Vitest or Jest (Recommended for JS/TS logic)
+- Playwright (Recommended for E2E/Browser testing)
+- `node -c` (Used for basic syntax verification of JS files)
 
 **Assertion Library:**
-- Built-in with runners (e.g., `expect()` for Jest, `assert` for Python).
+- Built-in `expect` (Jest/Vitest)
+- Matchers: `toBe`, `toEqual`, `toThrow`, `toHaveBeenCalledWith`
 
 **Run Commands:**
 ```bash
-# General test commands (project dependent)
-npm test                # Run all tests
-pytest                  # Run python tests
-$gsd-verify-work 4      # Run manual UAT for a phase
-$gsd-add-tests 4        # Generate and run tests for a phase
+# General patterns (depending on project implementation)
+npm test                              # Run all tests
+npm run test:unit                     # Run unit tests only
+npm run test:e2e                      # Run E2E tests only
+npx playwright test                   # Run Playwright E2E tests
 ```
 
 ## Test File Organization
 
 **Location:**
-- Co-located with source or in separate `tests/`, `__tests__` or `spec/` directories.
-- Verified by `$gsd-add-tests` discovery step.
+- Unit tests: Collocated with source files (e.g., `src/lib/utils.test.ts`) or in a parallel `tests/` directory.
+- E2E tests: Separate `e2e/` or `tests/e2e/` directory.
 
 **Naming:**
-- `.test.ts`, `.spec.ts`, `*Tests.fs`, `*Test.fs`, `*.test.js`.
+- Unit tests: `*.test.js` or `*.test.ts`
+- Integration tests: `*.spec.js` or `*.spec.ts`
+- E2E tests: `*.e2e.test.ts`
+
+**Structure:**
+```text
+src/
+  lib/
+    core.cjs
+    core.test.cjs (collocated unit test)
+tests/
+  unit/
+    state.test.cjs (separate unit test)
+  e2e/
+    phase-flow.e2e.test.ts (browser test)
+```
 
 ## Test Structure
 
 **Suite Organization:**
 ```typescript
-// Example pattern for TDD/Unit tests
-describe('feature name', () => {
-  it('should behave correctly in case X', () => {
-    // Arrange
-    const input = ...;
-    const expected = ...;
-    
-    // Act
-    const actual = fn(input);
-    
-    // Assert
-    expect(actual).toBe(expected);
+describe('ModuleName', () => {
+  describe('functionName', () => {
+    it('should handle success case', () => {
+      // arrange
+      const input = { ... };
+      const expected = { ... };
+
+      // act
+      const result = functionName(input);
+
+      // assert
+      expect(result).toEqual(expected);
+    });
+
+    it('should handle error case', () => {
+      expect(() => functionName(null)).toThrow();
+    });
   });
 });
 ```
 
 **Patterns:**
-- **Arrange/Act/Assert**: Clear separation of setup, execution, and verification.
-- **RED-GREEN-REFACTOR**: Encouraged by `$gsd-add-tests` workflow.
-- **UAT (Manual)**: Guided conversational tests with status tracking in `{phase}-UAT.md`.
+- **Arrange/Act/Assert**: Required structure for clarity.
+- **RED-GREEN-REFACTOR**: Prescribed by the `gsd-add-tests` workflow.
+- **Gate-based verification**: Tests should confirm failure (RED) if functionality is removed/broken before confirming success (GREEN).
 
 ## Mocking
 
 **Framework:**
-- Standard runner utilities (e.g., `jest.mock`, `mcp__playwright`).
+- Vitest `vi` or Jest `jest`
 
 **Patterns:**
-- **External Services**: Mocked via framework-specific tools to ensure test isolation.
-- **UI Interaction**: Simulated using Playwright tools.
+```typescript
+// Mocking internal modules
+vi.mock('./lib/state', () => ({
+  loadState: vi.fn()
+}));
+
+// Mocking external dependencies (fs, child_process)
+vi.mock('fs', () => ({
+  readFileSync: vi.fn(),
+  writeFileSync: vi.fn()
+}));
+```
 
 **What to Mock:**
-- External APIs, third-party libraries, complex dependencies that are slow or non-deterministic.
+- File system operations (`fs`)
+- Child process execution (`child_process.exec`)
+- Network/API calls
+- External CLI tools (e.g., `gh`)
 
 **What NOT to Mock:**
-- Pure functions and core business logic (these should be tested directly).
+- Pure logic functions
+- Data transformation utilities
 
 ## Fixtures and Factories
 
 **Test Data:**
-- Stored in separate files or generated inline for simple cases.
-- Database seeds and migrations are mentioned as needing "Smoke Tests" upon startup.
+- Factory functions preferred for creating complex state or roadmap objects.
+- Shared fixtures located in `tests/fixtures/`.
 
 **Location:**
-- Often in `fixtures/` or `data/` subdirectories within test folders.
+- `.planning/phases/NN-{name}/` artifacts (SUMMARY.md, CONTEXT.md) used as specifications for test generation.
 
 ## Coverage
 
 **Requirements:**
-- Encouraged for all new logic.
-- Gaps are identified during UAT and documented in `SUMMARY.md` or `UAT.md`.
+- High coverage expected for business logic in `gsd-core/bin/lib/`.
+- UI-heavy components covered by E2E tests rather than unit tests.
+
+**View Coverage:**
+```bash
+npm run test:coverage
+```
 
 ## Test Types
 
 **Unit Tests (TDD):**
-- Scope: Pure functions, business logic, parsers, validators.
-- Approach: Fast, isolated, high coverage.
+- Scope: Business logic, calculations, data transformations, parsers, validators, state machines.
+- Focus: Fast, isolated verification of single functions.
 
 **Integration Tests:**
-- Scope: Interaction between modules, database operations.
+- Scope: Interaction between CLI tools and the filesystem.
+- Focus: Verifying that `gsd-tools.cjs` correctly modifies `.planning/` files.
 
 **E2E Tests:**
-- Scope: Full user flows, navigation, forms, modals.
+- Scope: Full user flows, navigation, forms, and browser-based interactions.
 - Framework: Playwright.
-
-**UAT (Manual):**
-- Scope: High-level feature verification from a user perspective.
-- Tracking: `UAT.md` files in `.planning/phases/`.
 
 ## Common Patterns
 
 **Async Testing:**
-- Use `async/await` in test blocks.
+```typescript
+it('should handle async operation', async () => {
+  const result = await asyncFunction();
+  expect(result).toBe('expected');
+});
+```
 
 **Error Testing:**
-- Verify that functions throw expected errors for invalid inputs.
-
-**Smoke Tests:**
-- Cold Start Smoke Test: Verifies the application starts correctly from a fresh state (cleared DB, caches, etc.).
+```typescript
+it('should reject on invalid input', async () => {
+  await expect(asyncCall()).rejects.toThrow('Error message');
+});
+```
 
 ---
 
-*Testing analysis: 2026-06-10*
+*Testing analysis: 2026-06-11*

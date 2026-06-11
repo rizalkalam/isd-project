@@ -1,84 +1,84 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-06-10
+**Analysis Date:** 2026-06-11
 
 ## Tech Debt
 
-**GSD Core Duplication:**
-- Issue: GSD core components (binaries, hooks, workflows, and agent definitions) are duplicated across three top-level directories.
-- Files: `.claude/`, `.codex/`, `.gemini/`
-- Impact: Increased maintenance overhead; updates must be manually synced across three locations. High risk of version drift between agents.
-- Fix approach: Centralize GSD core logic and have provider-specific directories only for configurations or overrides.
+**Core Logic Duplication:**
+- Issue: The entire `gsd-core` logic is duplicated across three directories: `.claude/gsd-core/`, `.codex/gsd-core/`, and `.gemini/gsd-core/`.
+- Files: `.claude/gsd-core/bin/lib/*.cjs`, `.codex/gsd-core/bin/lib/*.cjs`, `.gemini/gsd-core/bin/lib/*.cjs`
+- Impact: Extreme maintenance burden. Bug fixes or feature updates must be manually synchronized across all three copies, leading to high risk of divergence and "it works in Claude but not in Codex" bugs.
+- Fix approach: Move common logic to a shared root directory (e.g., `gsd-core/`) and use symbolic links or a proper package management system to reference it from the respective agent directories.
 
-**Large File Complexity:**
-- Issue: Core library files are excessively large and handle multiple responsibilities.
-- Files: `.claude/gsd-core/bin/lib/state.cjs` (2050 lines), `.claude/gsd-core/bin/lib/core.cjs` (2052 lines)
-- Impact: Difficult to navigate, maintain, and test. Higher risk of side effects when modifying logic.
-- Fix approach: Refactor into smaller, focused modules based on functional boundaries (e.g., state persistence, roadmap parsing, phase management).
+**Monolithic Files:**
+- Issue: Several core files are excessively large and handle multiple responsibilities.
+- Files: `.claude/gsd-core/bin/lib/state.cjs` (~100KB), `.claude/gsd-core/bin/lib/core.cjs` (~94KB), `.claude/gsd-core/bin/gsd-tools.cjs` (~83KB).
+- Impact: Increased cognitive load for maintainers, higher risk of merge conflicts, and difficulty in implementing unit tests for isolated components.
+- Fix approach: Refactor these large files into smaller, focused modules with clear responsibilities.
 
-**Missing Root Dependency Management:**
-- Issue: There is no `package.json` or equivalent manifest in the repository root.
-- Files: `[project-root]`
-- Impact: No centralized way to manage repository-wide dev dependencies, linting rules, or scripts.
-- Fix approach: Initialize a root `package.json` and use workspaces (npm/pnpm/yarn) to manage shared and specific dependencies.
+**Lack of Automated Testing:**
+- Issue: No automated test suite (unit, integration, or E2E) was detected for the complex core logic.
+- Files: `.claude/gsd-core/bin/lib/` (entire directory)
+- Impact: Critical regressions can go unnoticed. The complexity of state management and git integration makes manual verification error-prone.
+- Fix approach: Introduce a testing framework (e.g., Vitest or Jest) and implement unit tests for core utilities, especially path validation, state patching, and command routing.
+
+**Legacy Migration Baggage:**
+- Issue: Presence of multiple installer migrations indicating a history of renaming and restructuring that still needs to be supported.
+- Files: `.claude/gsd-core/bin/lib/installer-migrations/`
+- Impact: Complexity in the installation/update process.
+- Fix approach: Baseline the migrations once a stable version is reached to prune old legacy logic.
 
 ## Security Considerations
 
-**Indirect Prompt Injection:**
-- Risk: Malicious instructions embedded in source code, PRDs, or planning documents could be interpreted as system commands by the AI agents.
-- Files: `.claude/agents/*.md`, `.claude/gsd-core/bin/lib/security.cjs`
-- Current mitigation: `security.cjs` includes `scanForInjection` with regex patterns for common injection techniques.
-- Recommendations: Implement more advanced semantic analysis for injection detection; ensure clear boundaries between system instructions and user-provided data in all agent prompts.
+**Shell Command Execution:**
+- Risk: Workflows and agents frequently execute shell commands, which is a potential vector for command injection if inputs are not strictly sanitized.
+- Files: `.claude/gsd-core/bin/lib/shell-command-projection.cjs`, `.claude/agents/*.md`
+- Current mitigation: Centralized `shell-command-projection.cjs` and `security.cjs` with `validateShellArg` helpers.
+- Recommendations: Implement a strict allowlist of allowed shell commands and arguments where possible.
 
-**External Dependency Fragility:**
-- Risk: Python scripts rely on external libraries that are not enforced or checked during environment setup.
-- Files: `scripts/render_term.py` (depends on `cairosvg`)
-- Current mitigation: Basic `try-except` around import in `render_term.py`.
-- Recommendations: Add these dependencies to a `requirements.txt` or the setup documentation/scripts.
+**Prompt Injection:**
+- Risk: Since agents generate markdown that is then read by other agents, there is a risk of indirect prompt injection.
+- Files: `.claude/agents/`, `.claude/gsd-core/bin/lib/security.cjs`
+- Current mitigation: `security.cjs` includes `scanForInjection` and `sanitizeForPrompt` functions.
+- Recommendations: Continuously update injection patterns as new attack vectors are discovered.
 
 ## Performance Bottlenecks
 
-**Full Repository Scans:**
-- Problem: Tools like `grep_search` and internal GSD scanners often perform whole-repo scans.
-- Files: `.claude/gsd-core/bin/lib/commands.cjs`, `.claude/agents/gsd-codebase-mapper.md`
-- Cause: Lack of indexing or scoped scanning by default.
-- Improvement path: Implement an indexing mechanism or more aggressive use of `.gitignore` / `.geminiignore` to skip irrelevant directories.
+**Synchronous File I/O:**
+- Problem: Extensive use of synchronous file operations (`readFileSync`, `writeFileSync`, `readdirSync`) which can block the event loop, especially in a framework designed to handle large codebases.
+- Files: `.claude/gsd-core/bin/lib/core.cjs`, `.claude/gsd-core/bin/lib/state.cjs`, `.claude/gsd-core/bin/lib/planning-workspace.cjs`
+- Cause: Legacy design for CLI-first tool where blocking I/O was deemed acceptable.
+- Improvement path: Transition to asynchronous `fs/promises` for file operations to improve responsiveness.
 
 ## Fragile Areas
 
-**Git Worktree Operations:**
-- Files: `.claude/agents/gsd-code-fixer.md`, `.claude/gsd-core/workflows/execute-phase.md`
-- Why fragile: High reliance on complex `git worktree` sequences which can fail if the local git state is unexpected (e.g., existing branches, locked indexes, or directory collisions).
-- Safe modification: Use more robust error handling and cleanup (e.g., trap/finally blocks) around worktree creation and removal.
-- Test coverage: Gaps (no automated tests found for worktree-heavy flows).
+**GSD Tools Dispatcher:**
+- Files: `.claude/gsd-core/bin/gsd-tools.cjs`
+- Why fragile: This single file handles dozens of disparate commands (state, phase, roadmap, requirements, milestone, validation, etc.). Any syntax error here breaks the entire CLI framework.
+- Safe modification: Use the `gsd-tools` command itself to verify logic before committing changes.
+- Test coverage: Zero detected.
 
-**Cross-Platform Path Safety:**
-- Files: `.claude/gsd-core/bin/lib/security.cjs`
-- Why fragile: Handles subtle platform differences like Windows UNC shares, macOS APFS case-insensitivity, and symlink resolution.
-- Safe modification: Changes should be verified on both Windows and Unix-like environments.
-- Test coverage: Gaps.
+**State Management Logic:**
+- Files: `.claude/gsd-core/bin/lib/state.cjs`
+- Why fragile: Complex regex-based patching of Markdown files (STATE.md) is inherently fragile compared to structured data formats.
+- Safe modification: Always verify `STATE.md` manually after programmatic updates.
+- Test coverage: Gaps in edge case handling for malformed Markdown.
 
 ## Scaling Limits
 
-**Agent Context Windows:**
-- Current capacity: Dependent on the LLM used (Claude, GPT-4, etc.).
-- Limit: Large files (like `state.cjs`) and broad codebase re-maps can quickly consume the context window, leading to loss of context or truncated responses.
-- Scaling path: Implement more aggressive context pruning and "summarize-on-read" patterns for large files.
+**Framework Maintenance:**
+- Current capacity: Managed by manual duplication.
+- Limit: Becomes unsustainable as more agent platforms (e.g., Gemini, ChatGPT, Llama) or specialized skills are added.
+- Scaling path: Move to a monorepo structure with a single source of truth for the core logic and build/publish steps for platform-specific configurations.
 
 ## Test Coverage Gaps
 
-**GSD Core Logic:**
-- What's not tested: Core state management, roadmap parsing, and security validation logic.
-- Files: `.claude/gsd-core/bin/lib/*.cjs`
-- Risk: Regressions in core GSD functionality could break all agent workflows unnoticed.
+**Core Utility Logic:**
+- What's not tested: Path validation, shell argument sanitization, Markdown parsing, and state transitions.
+- Files: `.claude/gsd-core/bin/lib/`
+- Risk: Critical security or data integrity bugs could be introduced during refactoring.
 - Priority: High
-
-**Utility Scripts:**
-- What's not tested: ANSI parsing in `render_term.py`, link verification logic in `verify_doc_links.py`.
-- Files: `scripts/render_term.py`, `scripts/verify_doc_links.py`
-- Risk: Visual errors in screenshots or undetected broken links in documentation.
-- Priority: Medium
 
 ---
 
-*Concerns audit: 2026-06-10*
+*Concerns audit: 2026-06-11*

@@ -1,36 +1,35 @@
-<!-- refreshed: 2026-06-10 -->
+<!-- refreshed: 2026-06-11 -->
 # Architecture
 
-**Analysis Date:** 2026-06-10
+**Analysis Date:** 2026-06-11
 
 ## System Overview
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
-│                      Command Interface                      │
-│         (Slash Commands in Agent Terminal / CLI)            │
+│                      Agent Layer                            │
+│           `.claude/agents/gsd-*.md`                         │
 ├──────────────────┬──────────────────┬───────────────────────┤
-│   Claude Code    │      Codex       │        Gemini         │
-│  `.claude/`      │     `.codex/`    │       `.gemini/`      │
+│   gsd-planner    │   gsd-executor   │    gsd-verifier       │
 └────────┬─────────┴────────┬─────────┴──────────┬────────────┘
          │                  │                     │
          ▼                  ▼                     ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                    Workflow Orchestration                   │
-│         `.claude/gsd-core/workflows/` (Markdown)            │
-│         `.codex/skills/` (Skill Adapters)                   │
+│                    Workflow Layer                           │
+│      `.claude/gsd-core/workflows/*.md`                      │
 └─────────────────────────────────────────────────────────────┘
          │
          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│                   Specialized Agent Layer                   │
-│         `.claude/agents/*.md` (System Prompts)              │
+│                    Tooling Layer (CLI)                      │
+│      `.claude/gsd-core/bin/gsd-tools.cjs`                   │
+│      `.claude/gsd-core/bin/lib/*.cjs`                       │
 └─────────────────────────────────────────────────────────────┘
          │
          ▼
 ┌─────────────────────────────────────────────────────────────┐
-│  State & Project Data            Source Code                │
-│  `.planning/`                    `src/`, `app/`, etc.       │
+│                  Filesystem (State/Docs)                    │
+│      `.planning/` (STATE.md, ROADMAP.md, etc.)              │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -38,99 +37,129 @@
 
 | Component | Responsibility | File |
 |-----------|----------------|------|
-| **Command Interface** | Provides user entry points for lifecycle phases. | `.claude/commands/` |
-| **Workflow Engine** | Orchestrates tasks using Markdown-defined logic. | `.claude/gsd-core/workflows/` |
-| **Specialized Agents** | Perform specific roles (Planner, Executor, Verifier). | `.claude/agents/` |
-| **Skill Adapters** | Maps generic workflow commands to platform-specific tools. | `.codex/skills/` |
-| **State Management** | Tracks project progress, requirements, and plans. | `.planning/` |
+| Agents | Orchestrate the GSD process, interface with the user, and execute workflows. | `.claude/agents/*.md` |
+| Workflows | Define the step-by-step procedures for each phase (discuss, plan, execute, verify). | `.claude/gsd-core/workflows/*.md` |
+| gsd-tools | Centralized CLI utility for all GSD workflow operations (state, roadmap, phase management). | `.claude/gsd-core/bin/gsd-tools.cjs` |
+| Core Library | Specialized logic for state management, git operations, and project artifacts. | `.claude/gsd-core/bin/lib/*.cjs` |
+| State | Tracks the current progress, active phase, and project metadata. | `.planning/STATE.md` |
+| Roadmap | Defines the project milestones and phases. | `ROADMAP.md` |
 
 ## Pattern Overview
 
-**Overall:** Agentic Workflow Orchestration (AWO)
+**Overall:** Agentic Workflow with Modular CLI
 
 **Key Characteristics:**
-- **Spec-First:** Workflows mandate discussion and planning before execution.
-- **Persona-Based:** Tasks are delegated to specialized agents with distinct system prompts.
-- **Markdown-Driven:** Logic and instructions are defined in human-readable Markdown files.
+- **Workflow-Driven**: Agent behavior is governed by markdown-based workflows that describe steps and decision points.
+- **CLI-Augmented**: Agents rely on a specialized CLI (`gsd-tools.cjs`) to perform complex filesystem and git operations safely and consistently.
+- **File-Based State**: The system's source of truth is stored in markdown and JSON files within the `.planning/` directory, allowing for transparency and git-tracking.
 
 ## Layers
 
-**Command Layer:**
-- Purpose: Entry point for user interaction.
-- Location: `.claude/commands/`
-- Contains: Slash command definitions.
+**Agent Layer:**
+- Purpose: Provides specialized personas for different parts of the SDLC.
+- Location: `.claude/agents/`
+- Contains: System instructions and role-specific constraints.
 - Depends on: Workflow Layer.
-- Used by: User.
+- Used by: User / LLM.
 
 **Workflow Layer:**
-- Purpose: Defines the sequence of steps for a GSD phase.
+- Purpose: Defines the business logic of the GSD process.
 - Location: `.claude/gsd-core/workflows/`
-- Contains: Markdown-based instruction sets and tool call patterns.
-- Depends on: Agent Layer.
-- Used by: Command Layer.
+- Contains: Procedural markdown files with embedded shell commands.
+- Depends on: Tooling Layer.
+- Used by: Agent Layer.
 
-**Agent Layer:**
-- Purpose: Defines the specialized behavior and knowledge of AI agents.
-- Location: `.claude/agents/`
-- Contains: Markdown system prompts.
-- Depends on: Infrastructure (LLM runtime).
+**Tooling Layer:**
+- Purpose: Automates repetitive and complex tasks.
+- Location: `.claude/gsd-core/bin/`
+- Contains: Node.js scripts and libraries.
+- Depends on: Filesystem/OS.
 - Used by: Workflow Layer.
 
 ## Data Flow
 
-### Primary Request Path (Phase Execution)
+### Primary Request Path (Phase Operation)
 
-1. **Trigger:** User issues a command like `/gsd:plan-phase` (`.claude/commands/gsd/plan-phase.md`).
-2. **Orchestration:** GSD Core loads the `plan-phase.md` workflow (`.claude/gsd-core/workflows/plan-phase.md`).
-3. **Execution:** The workflow spawns a `gsd-planner` agent (`.claude/agents/gsd-planner.md`) to create a `PLAN.md`.
-4. **Verification:** The workflow spawns a `gsd-plan-checker` to validate the plan against requirements.
-5. **Persistence:** The final plan is written to `.planning/phases/phase-N/PLAN.md`.
+1. **Agent Invocation**: The user or another agent triggers a workflow (e.g., `/gsd:plan-phase`).
+2. **Workflow Execution**: The agent reads the corresponding workflow file (e.g., `.claude/gsd-core/workflows/plan-phase.md`).
+3. **CLI Command**: The agent executes a shell command defined in the workflow (e.g., `node .claude/gsd-core/bin/gsd-tools.cjs phase start ...`).
+4. **Library Logic**: `gsd-tools.cjs` calls internal functions in `bin/lib/state.cjs` or `bin/lib/roadmap.cjs`.
+5. **State Update**: The library modifies files in `.planning/` (e.g., updates `STATE.md`).
+6. **Agent Feedback**: The agent receives the command output and reports back to the user or proceeds to the next step.
 
 ### State Management:
-- **Project State:** Managed in `.planning/PROJECT.md` and `.planning/ROADMAP.md`.
-- **Phase State:** Each phase has its own directory in `.planning/phases/`.
+- Handled primarily by `bin/lib/state.cjs` and `bin/lib/planning-workspace.cjs`.
+- Uses a file-locking mechanism (`_heldStateLocks` in `state.cjs`) to prevent concurrent modifications during the same process.
+- Frontmatter in `.planning/STATE.md` serves as the primary data store for active project parameters.
 
 ## Key Abstractions
 
-**Skill:**
-- Purpose: Encapsulates a high-level capability (e.g., "Add Tests").
-- Examples: `.codex/skills/gsd-add-tests/`
-- Pattern: Adapter pattern (translating workflow commands to tool calls).
+**Gates:**
+- Purpose: Validation checkpoints that control workflow progression.
+- Examples: `.claude/gsd-core/references/gates.md`
+- Pattern: Pre-flight, Revision, Escalation, and Abort.
 
-**Workflow:**
-- Purpose: A scripted sequence of agent interactions and tool uses.
-- Examples: `.claude/gsd-core/workflows/execute-phase.md`
-- Pattern: Scripting/Orchestration.
+**Phases:**
+- Purpose: Incremental units of work defined in the roadmap.
+- Examples: `.planning/phases/NN-{name}/`
+- Pattern: Decimal numbering (e.g., 01.10) for insertion and sequencing.
+
+**Worktrees:**
+- Purpose: Isolated environments for executing plans without polluting the main branch.
+- Examples: `bin/lib/worktree-safety.cjs`
+- Pattern: Automated creation and cleanup of git worktrees.
 
 ## Entry Points
 
-**Slash Commands:**
-- Location: `.claude/commands/gsd/`
-- Triggers: User input in the agent terminal.
-- Responsibilities: Initialize the appropriate workflow with user arguments.
+**gsd-tools CLI:**
+- Location: `.claude/gsd-core/bin/gsd-tools.cjs`
+- Triggers: Shell commands from Agents or Workflows.
+- Responsibilities: Dispatches commands to specialized libraries.
+
+**Claude Entry (CLAUDE.md):**
+- Location: `CLAUDE.md`
+- Triggers: Initial project load by the agent.
+- Responsibilities: Provides high-level commands and environment context.
 
 ## Architectural Constraints
 
-- **Platform Dependency:** Agent configurations and command formats are platform-specific (`.claude` vs `.codex`).
-- **Markdown Logic:** Workflows rely on the LLM's ability to follow complex instructions embedded in Markdown.
-- **Git Integration:** Workflows often assume a Git repository structure and use Git hooks (`.claude/hooks/`).
+- **Threading:** Single-threaded Node.js execution for the CLI.
+- **Global state:** No in-memory global state across agent turns; all persistence is in `.planning/`.
+- **File System Dependency:** Heavily reliant on POSIX-style paths (handled by `toPosixPath` in `core.cjs`).
+- **Git Integration:** Requires an initialized git repository for most operations (tracked via `.git`).
 
 ## Anti-Patterns
 
-### Inline Execution without Planning
+### Checkpoint Human-Automation
+**What happens:** Asking a human to perform a task that can be automated via CLI.
+**Why it's wrong:** Reduces efficiency and introduces human error.
+**Do this instead:** Automate via `gsd-tools` or relevant CLI (e.g., Vercel, Prisma).
 
-**What happens:** Skipping `/gsd:plan-phase` and jumping directly to code changes.
-**Why it's wrong:** Leads to architectural drift and misalignment with requirements.
-**Do this instead:** Always follow the GSD lifecycle: Discuss -> Plan -> Execute.
+### Vague Task Definitions
+**What happens:** Creating tasks like "Style the dashboard" without specifics.
+**Why it's wrong:** Causes ambiguity and requires clarifying questions.
+**Do this instead:** Provide specific, measurable tasks (e.g., "Add Tailwind classes to Dashboard.tsx: grid layout (3 cols on lg)...").
+
+### Reflexive SUMMARY Chaining
+**What happens:** Every plan referencing all previous SUMMARY files.
+**Why it's wrong:** Wastes context budget and bloats prompts.
+**Do this instead:** Use selective context, referencing only what is strictly necessary.
 
 ## Error Handling
 
-**Strategy:** Human-in-the-loop and Agentic Verification.
+**Strategy:** Use of formal Gate Taxonomy.
 
 **Patterns:**
-- **Verification Loops:** Workflows (like `plan-phase`) include a verification step where a different agent checks the output.
-- **Checkpoints:** State is saved at key steps to allow for recovery or manual correction.
+- **Pre-flight Gates**: Check preconditions (e.g., file existence) before starting.
+- **Revision Gates**: Evaluate output quality and loop back to the agent if needed (max 3 iterations).
+- **Escalation Gates**: Pause for human input when automated resolution fails.
+
+## Cross-Cutting Concerns
+
+**Logging:** Handled by `.claude/gsd-core/bin/lib/observability/logger.cjs`.
+**Validation:** Centralized in `bin/lib/validate.cjs` and specialized logic in roadmap/state libraries.
+**Configuration:** Managed via `.planning/config.json` and `bin/lib/configuration.cjs`.
 
 ---
 
-*Architecture analysis: 2026-06-10*
+*Architecture analysis: 2026-06-11*
