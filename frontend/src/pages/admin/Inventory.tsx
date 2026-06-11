@@ -1,6 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import api from "../../api/client";
 import { BookCard } from "../../features/catalog/components/BookCard";
+import { useState } from "react";
+import { BookForm } from "../../components/modals/BookForm";
 
 interface Title {
   id: number;
@@ -12,6 +14,9 @@ interface Title {
 }
 
 export default function Inventory() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTitle, setSelectedTitle] = useState<Title | undefined>(undefined);
+
   const { data: titles, isLoading, error } = useQuery<Title[]>({
     queryKey: ["titles"],
     queryFn: async () => {
@@ -19,6 +24,16 @@ export default function Inventory() {
       return response.data;
     },
   });
+
+  const handleOpenAddModal = () => {
+    setSelectedTitle(undefined);
+    setIsModalOpen(true);
+  };
+
+  const handleSelectTitle = (title: Title) => {
+    setSelectedTitle(title);
+    setIsModalOpen(true);
+  };
 
   if (isLoading) {
     return (
@@ -40,7 +55,10 @@ export default function Inventory() {
     <div className="container mx-auto p-8">
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold">Library Inventory</h1>
-        <button className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors">
+        <button 
+          onClick={handleOpenAddModal}
+          className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors"
+        >
           Add New Book
         </button>
       </div>
@@ -52,16 +70,24 @@ export default function Inventory() {
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {titles.map((title) => (
-            <BookCard
-              key={title.id}
-              title={title.title}
-              author={title.author}
-              isbn={title.isbn}
-              coverUrl={title.cover_url}
-              copyCount={title.copies?.length || 0}
-            />
+            <div key={title.id} onClick={() => handleSelectTitle(title)} className="cursor-pointer">
+              <BookCard
+                title={title.title}
+                author={title.author}
+                isbn={title.isbn}
+                coverUrl={title.cover_url}
+                copyCount={title.copies?.length || 0}
+              />
+            </div>
           ))}
         </div>
+      )}
+
+      {isModalOpen && (
+        <BookForm 
+          onClose={() => setIsModalOpen(false)} 
+          selectedTitle={selectedTitle}
+        />
       )}
     </div>
   );
