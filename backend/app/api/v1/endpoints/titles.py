@@ -4,7 +4,7 @@ from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.db.session import get_session
 from app.api import deps
-from app.models.title import Title, TitleBase
+from app.models.title import Title, TitleBase, TitleUpdate
 from app.models.copy import Copy, CopyCreate, CopyStatus
 from app.models.user import UserRole
 
@@ -41,6 +41,54 @@ async def create_title(
     await session.commit()
     await session.refresh(db_obj)
     return db_obj
+
+@router.put("/{title_id}", response_model=Title)
+async def update_title(
+    *,
+    session: AsyncSession = Depends(get_session),
+    title_id: int,
+    title_in: TitleUpdate,
+    current_user = Depends(deps.check_role(UserRole.LIBRARIAN)),
+):
+    result = await session.exec(select(Title).where(Title.id == title_id))
+    title = result.first()
+    if not title:
+        raise HTTPException(status_code=404, detail="Title not found")
+    
+    if title_in.isbn is not None and title_in.isbn != title.isbn:
+        # Check if new ISBN already exists
+        result = await session.exec(select(Title).where(Title.isbn == title_in.isbn))
+        existing_title = result.first()
+        if existing_title:
+            raise HTTPException(
+                status_code=400,
+                detail="A book with this ISBN already exists.",
+            )
+            
+    title_data = title_in.dict(exclude_unset=True)
+    for key, value in title_data.items():
+        setattr(title, key, value)
+        
+    session.add(title)
+    await session.commit()
+    await session.refresh(title)
+    return title
+
+@router.delete("/{title_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_title(
+    *,
+    session: AsyncSession = Depends(get_session),
+    title_id: int,
+    current_user = Depends(deps.check_role(UserRole.LIBRARIAN)),
+):
+    result = await session.exec(select(Title).where(Title.id == title_id))
+    title = result.first()
+    if not title:
+        raise HTTPException(status_code=404, detail="Title not found")
+        
+    await session.delete(title)
+    await session.commit()
+    return None
 
 @router.post("/{title_id}/copies", response_model=Copy, status_code=status.HTTP_201_CREATED)
 async def add_copy(

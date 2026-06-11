@@ -7,6 +7,12 @@ class TitleBase(SQLModel):
     isbn: str = Field(unique=True, index=True)
     cover_url: Optional[str] = None
 
+class TitleUpdate(SQLModel):
+    title: Optional[str] = None
+    author: Optional[str] = None
+    isbn: Optional[str] = None
+    cover_url: Optional[str] = None
+
 class Title(TitleBase, table=True):
     id: Optional[int] = Field(default=None, primary_key=True)
     
