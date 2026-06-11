@@ -1,57 +1,63 @@
-# Feature Landscape
+# Feature Landscape: Library Management System
 
-**Domain:** Clinical Epidemiology & Surveillance
+**Domain:** Management Information System (Library)
 **Researched:** 2026-06-11
 
 ## Table Stakes
 
-Features users expect in any clinical surveillance tool.
+Features users expect in a modern LMS.
 
 | Feature | Why Expected | Complexity | Notes |
 |---------|--------------|------------|-------|
-| ICD-10 Trend Charting | Core requirement for tracking disease outbreaks. | Medium | Requires clean data mapping. |
-| Time Range Filtering | Epidemiologists need to compare weeks/months. | Low | Standard date range queries. |
-| Wait Time (SLA) Tracking | Essential for operational efficiency and patient satisfaction. | Medium | Requires capturing transition timestamps. |
-| Export (PDF/Excel) | Clinical reports must be shareable and archivable. | Low | Use standard libraries (jsPDF/xlsx). |
-| RBAC | Sensitive clinical data access must be controlled. | Low | Role-based logic for Managers vs Staff. |
+| **Instant Search** | Users expect "type-to-filter" behavior for the catalog. | Low | Use TanStack Table on frontend. |
+| **Mobile-Responsive UI** | Students search for books on their phones. | Low | Tailwind CSS / shadcn handles this. |
+| **Status Indicators** | Immediate visual of "Available", "Borrowed", "Reserved". | Low | Real-time DB check. |
+| **Secure Authentication** | Librarian actions must be protected. | Medium | Use JWT with secure cookie strategy. |
+| **Data Export** | Librarians need Excel/CSV exports for reporting. | Low | Native TanStack Table export or CSV response. |
 
 ## Differentiators
 
-Features that add high value beyond the basics.
+Features that set this LMS apart and add significant value.
 
 | Feature | Value Proposition | Complexity | Notes |
 |---------|-------------------|------------|-------|
-| Early Warning Alerts | Automatically flags spikes in specific ICD-10 categories. | High | Requires statistical threshold logic (e.g., 2 standard deviations). |
-| Wait Time Heatmaps | Visualizes bottleneck hours for staffing optimization. | Medium | Grouping SLA data by hour of day. |
-| Automated Anonymization | Ensures HIPAA compliance by default on all dashboard views. | Medium | Integration with ARX or custom de-identification pipeline. |
+| **In-Browser Scanning** | Turn any phone/laptop camera into a barcode scanner. | Medium | Use `Html5-qrcode`. Saves hardware costs. |
+| **PDF Borrow Slips** | Professional receipts for borrow confirmation. | Medium | Use `WeasyPrint` for templated PDFs. |
+| **Visual Dashboard** | Analytics on most borrowed books, overdue trends. | Medium | Use `Recharts` with shadcn. |
+| **Optimistic UI** | Borrow requests feel instant; UI updates before server confirmation. | Medium | Handled by TanStack Query. |
 
 ## Anti-Features
 
-Features to explicitly NOT build to avoid scope creep.
+Features to explicitly NOT build to maintain focus and security.
 
 | Anti-Feature | Why Avoid | What to Do Instead |
 |--------------|-----------|-------------------|
-| Patient Record Editing | Risk of data integrity issues in the TPS. | Keep the analytics system strictly read-only. |
-| Billing & Payments | Outside the scope of epidemiology and surveillance. | Focus on clinical diagnosis trends. |
-| Complex Rx Logic | Drug-drug interaction checking is a separate domain. | Focus on ICD-10 codes, not pharmacy prescriptions. |
+| **Social Media Auth** | Security risk for university data; not professional. | Use standard Email/Pass or LDAP. |
+| **In-App Chat** | High maintenance; distracting. | Use university's existing email/messaging. |
+| **Digital Library (E-books)**| Copyright/storage complexity exceeds scope. | Focus on physical inventory management. |
+| **Global Search** | No need to search outside Universitas XYZ. | Index local PostgreSQL catalog efficiently. |
 
 ## Feature Dependencies
 
-```
-CDC Pipeline (Data) → ICD-10 Aggregation → Trend Dashboards
-Encounter Status Tracking → Wait Time Calculation → SLA Alerts
+```mermaid
+User Auth → Book Catalog CRUD
+Book Catalog → Borrowing Workflow
+Borrowing Workflow → Overdue Alerts
+Borrowing Workflow → Librarian Dashboard
 ```
 
 ## MVP Recommendation
 
 Prioritize:
-1. **ICD-10 Trend Dashboards** (3-character rollup)
-2. **SLA Wait Time Tracking** (Basic Arrived-to-Panggil delta)
-3. **Anonymized Manager View** (RBAC foundation)
+1. **F01 & F07**: User auth and Book CRUD (Management foundation).
+2. **F02**: Search & Filtering (Public value).
+3. **F03 & F04**: Borrow/Return core logic.
+4. **F06**: Basic Librarian Dashboard.
 
-Defer: **Statistical Alerting** (Phase 2+), **Predictive Modeling** (Future).
+Defer:
+- **F05 (Overdue Alerts)**: Can be handled manually by librarians via the dashboard in the very first release.
+- **Advanced Analytics**: Focus on operational tracking first.
 
 ## Sources
-
-- [CDC/NHSN Surveillance Definitions]
-- [Hospital Management Information Systems (HMIS) best practices]
+- Competitive analysis of OpenBiblio, Koha (LMS industry standards).
+- 2025 UX trends for management dashboards.

@@ -1,60 +1,68 @@
-# Technology Stack
+# Technology Stack: Library Management System
 
-**Project:** Sistem Epidemiologi Klinik
+**Project:** Library Management System (LMS)
 **Researched:** 2026-06-11
+**Status:** Recommended for 2025/2026
 
 ## Recommended Stack
 
 ### Core Framework
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| React | 18+ | Frontend Dashboard | Best-in-class for interactive, data-heavy visualizations. |
-| Node.js / Express | 20+ | Backend API | Fast, event-driven, handles concurrent dashboard requests well. |
-| Python (Pandas/NumPy) | 3.11+ | Analytics Engine | Superior libraries for epidemiological trend analysis and data processing. |
+| **FastAPI** | ^0.111.0 | Backend API | High performance, native async support, and excellent developer experience with type hints. |
+| **React (Vite)** | ^5.0.0 | Frontend UI | Industry standard for SPAs. Vite provides significantly faster build and dev times than CRA. |
+| **SQLModel** | ^0.0.19 | ORM | Combines SQLAlchemy 2.0 and Pydantic v2. Eliminates code duplication by using one class for both DB and API schemas. |
 
 ### Database
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| PostgreSQL | 15+ | Analytical Store | Strong JSONB support for ICD-10 data and robust aggregation capabilities. |
-| Redis | 7.0+ | Hot Aggregates | Real-time counters for "Live" dashboard metrics and caching. |
+| **PostgreSQL** | 16+ | Data Storage | Robust relational database required for complex library associations (Authors, Books, Borrows, Users). |
+| **Alembic** | ^1.13.0 | Migrations | The industry standard for Python database migrations. Reliable and battle-tested. |
 
 ### Infrastructure
 | Technology | Version | Purpose | Why |
 |------------|---------|---------|-----|
-| Debezium | Latest | CDC Ingestion | Extracts data from TPS logs without affecting production performance. |
-| Apache Kafka | Latest | Message Broker | Decouples the ingestion layer from the transformation layer for reliability. |
-| Docker / K8s | - | Containerization | Ensures consistency across development and clinical environments. |
+| **Docker** | 24+ | Containerization | Ensures consistency across development, staging, and university production servers. |
+| **Docker Compose**| 2+ | Orchestration | Simplifies local development and small-scale deployment of API, DB, and Frontend containers. |
 
 ### Supporting Libraries
 | Library | Version | Purpose | When to Use |
 |---------|---------|---------|-------------|
-| Recharts | Latest | Visualization | Primary charting library for trend and SLA graphs. |
-| date-fns | Latest | Date Manipulation | Handling weekly/monthly clinical data windows. |
-| ARX Library | Latest | Anonymization | Implementing K-Anonymity and de-identification rules. |
+| **shadcn/ui** | Latest | UI Components | For rapid construction of accessible, beautiful dashboards using Radix UI and Tailwind. |
+| **TanStack Query** | ^5.0.0 | Data Fetching | Manages server state, caching, and loading/error states for book lists and user data. |
+| **TanStack Table** | ^8.0.0 | Data Grids | For powerful sorting, filtering, and pagination of the book catalog and loan history. |
+| **Html5-qrcode** | ^2.3.0 | Barcode Scanning| Browser-based 1D/2D scanning for book check-in/check-out via mobile or webcam. |
+| **WeasyPrint** | ^62.0 | PDF Generation | High-quality PDF generation for borrow slips and reports using standard HTML/CSS. |
+| **PyJWT** | ^2.8.0 | Auth Tokens | For secure JWT creation and verification. |
 
 ## Alternatives Considered
 
 | Category | Recommended | Alternative | Why Not |
 |----------|-------------|-------------|---------|
-| Ingestion | CDC (Debezium) | Polling ETL | Polling the TPS every minute causes unnecessary load and latency. |
-| Database | PostgreSQL | MongoDB | Postgres provides better relational integrity for clinical records and faster aggregations for large datasets. |
-| Visualization | Recharts | D3.js | D3 has a steeper learning curve; Recharts provides sufficient power for standard clinical charts. |
+| **ORM** | SQLModel | SQLAlchemy | SQLAlchemy is more verbose. SQLModel simplifies the FastAPI + Pydantic workflow. |
+| **PDF** | WeasyPrint | ReportLab | ReportLab is too low-level and hard to style compared to HTML-to-PDF. |
+| **UI** | shadcn/ui | Material UI | shadcn/ui offers better customization and "copy-paste" ownership than rigid component libraries. |
+| **State** | TanStack Query | Redux | Redux is overkill for server-state management in an LMS; Query handles caching better. |
 
 ## Installation
 
 ```bash
-# Core Backend
-npm install express pg redis kafka-node
-
-# Analytics (Python)
-pip install pandas numpy flask
+# Backend
+pip install fastapi[all] sqlmodel asyncpg alembic weasyprint pyjwt
 
 # Frontend
-npm install react react-dom recharts date-fns
+npm create vite@latest frontend -- --template react-ts
+cd frontend
+npm install @tanstack/react-query @tanstack/react-table lucide-react html5-qrcode
+npx shadcn-ui@latest init
 ```
 
-## Sources
+## Security Rationale: JWT Strategy
+- **Access Token:** Stored in **JS Memory** (React state). Valid for 15 minutes. Prevents XSS theft.
+- **Refresh Token:** Stored in **HTTPOnly, Secure, SameSite=Strict Cookie**. Valid for 7 days. Provides persistence while shielding the token from malicious scripts.
 
-- [Clinical Surveillance Architecture - NIH/Slideshare]
-- [Debezium Documentation]
-- [React/Recharts Documentation]
+## Sources
+- FastAPI Documentation (Best Practices 2024/2025)
+- shadcn/ui Documentation (Dashboard Patterns)
+- OWASP JWT Cheat Sheet (Modern Cookie Strategy)
+- Benchmarks for HTML-to-PDF (2025 updates)
