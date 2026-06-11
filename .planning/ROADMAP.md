@@ -74,8 +74,16 @@ Plans:
   2. System automatically identifies and flags overdue books for librarian attention.
   3. Student can view their current loan status and receive basic notifications on request updates.
 
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+Plans:
+**Wave 1**
+
+- [ ] 03-01-PLAN.md — Backend Data Foundation (due_date, overdue/stats/my endpoints)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [ ] 03-02-PLAN.md — Dashboard & Student Loans Pages (frontend delivery)
 
 ## Progress Table
 
@@ -83,4 +91,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Catalog | 3/3 | Complete   | 2026-06-11 |
 | 2. Borrowing & Discovery | 3/3 | Complete   | 2026-06-11 |
-| 3. Management & Monitoring | 0/0 | Not started | - |
+| 3. Management & Monitoring | 0/2 | Not started | - |
