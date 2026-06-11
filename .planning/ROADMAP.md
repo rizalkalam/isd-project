@@ -17,8 +17,12 @@
   1. User can register as a student or librarian and log in securely.
   2. Librarian can add a new book title and manage multiple physical copies of that title.
   3. User is correctly redirected based on their role after login and can log out.
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 01-01-PLAN.md — Foundation & Auth Skeleton
+- [ ] 01-02-PLAN.md — Catalog & Inventory Slice
 
 ### Phase 2: Borrowing & Discovery
 **Goal**: Implement the core borrowing lifecycle and search.
@@ -48,6 +52,6 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Catalog | 0/0 | Not started | - |
+| 1. Foundation & Catalog | 0/2 | Not started | - |
 | 2. Borrowing & Discovery | 0/0 | Not started | - |
 | 3. Management & Monitoring | 0/0 | Not started | - |
