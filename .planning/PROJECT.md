@@ -12,17 +12,16 @@ Centralizing library operations to replace paper-based logs with an efficient, t
 
 ### Validated
 
-(None yet — ship to validate)
+- [x] **F01**: User registration & login (Students/Librarians) — *Validated in Phase 1: Foundation & Catalog*
+- [x] **F07**: Book management CRUD for librarians — *Validated in Phase 1: Foundation & Catalog*
 
 ### Active
 
-- [ ] **F01**: User registration & login (Students/Librarians)
 - [ ] **F02**: Book catalog search and filtering
 - [ ] **F03**: Borrow request submission and approval/rejection
 - [ ] **F04**: Return tracking and availability updates
 - [ ] **F05**: Overdue alerts for late returns
 - [ ] **F06**: Librarian dashboard for loans and requests
-- [ ] **F07**: Book management CRUD for librarians
 
 ### Out of Scope
 
@@ -33,7 +32,7 @@ Centralizing library operations to replace paper-based logs with an efficient, t
 
 ## Context
 
-The university currently uses paper ledgers and spreadsheets, leading to inefficiencies and untracked overdue books. The new system must be fast and secure.
+The system now has a functional "Walking Skeleton" with secure JWT authentication and core collection management (Titles and physical Copies). The university's paper-based logs can now be digitally represented.
 
 ## Constraints
 
@@ -46,7 +45,7 @@ The university currently uses paper ledgers and spreadsheets, leading to ineffic
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Follow sample spec exactly | User wants to follow the built-in tutorial project spec for LMS. | — Pending |
+| Follow sample spec exactly | User wants to follow the built-in tutorial project spec for LMS. | ✓ Validated |
 
 ## Evolution
 
@@ -66,4 +65,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-06-11 after initialization*
+*Last updated: 2026-06-11 after Phase 1 Completion*
