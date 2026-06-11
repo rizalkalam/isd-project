@@ -4,6 +4,7 @@ from app.db.session import engine, AsyncSession
 from app.models.user import User, UserRole
 from app.models.title import Title
 from app.models.copy import Copy, CopyStatus
+from app.models.loan import Loan  # ensure Loan table is created
 from app.core.security import get_password_hash
 
 async def init_db():

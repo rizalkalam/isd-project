@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.endpoints import auth, titles
+from app.api.v1.endpoints import auth, titles, loans
 
 app = FastAPI(title="Library Management System API")
 
@@ -14,6 +14,7 @@ app.add_middleware(
 
 app.include_router(auth.router, prefix="/api/v1/auth", tags=["auth"])
 app.include_router(titles.router, prefix="/api/v1/titles", tags=["titles"])
+app.include_router(loans.router, prefix="/api/v1/loans", tags=["loans"])
 
 @app.get("/health")
 async def health_check():

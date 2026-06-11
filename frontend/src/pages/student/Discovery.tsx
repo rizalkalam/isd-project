@@ -1,16 +1,32 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { searchTitles } from "../../features/catalog/api/search";
 import { BookCard } from "../../features/catalog/components/BookCard";
 import { Badge } from "../../components/ui/badge";
 import { Search } from "lucide-react";
+import { requestLoan } from "../../features/loans/api/loans";
 
 const Discovery = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [feedback, setFeedback] = useState<{ id: number; message: string; ok: boolean } | null>(null);
+  const queryClient = useQueryClient();
 
   const { data: books, isLoading } = useQuery({
     queryKey: ["titles", "search", searchQuery],
     queryFn: () => searchTitles(searchQuery),
+  });
+
+  const borrowMutation = useMutation({
+    mutationFn: (titleId: number) => requestLoan(titleId),
+    onSuccess: (_, titleId) => {
+      setFeedback({ id: titleId, message: "Request submitted!", ok: true });
+      queryClient.invalidateQueries({ queryKey: ["titles", "search"] });
+      setTimeout(() => setFeedback(null), 3000);
+    },
+    onError: (_, titleId) => {
+      setFeedback({ id: titleId, message: "Could not request — no copies available.", ok: false });
+      setTimeout(() => setFeedback(null), 3000);
+    },
   });
 
   return (
@@ -32,6 +48,16 @@ const Discovery = () => {
         </div>
       </header>
 
+      {feedback && (
+        <div
+          className={`mb-4 p-3 rounded-lg text-sm font-medium ${
+            feedback.ok ? "bg-green-50 text-green-700 border border-green-200" : "bg-red-50 text-red-700 border border-red-200"
+          }`}
+        >
+          {feedback.message}
+        </div>
+      )}
+
       {isLoading ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 animate-pulse">
           {[...Array(8)].map((_, i) => (
@@ -48,6 +74,8 @@ const Discovery = () => {
                 isbn={book.isbn}
                 coverUrl={book.cover_url}
                 copyCount={book.available_copies}
+                onBorrow={() => borrowMutation.mutate(book.id)}
+                borrowing={borrowMutation.isPending && borrowMutation.variables === book.id}
               />
               <div className="absolute top-2 right-2">
                 <Badge variant={book.available_copies > 0 ? "default" : "destructive"}>
