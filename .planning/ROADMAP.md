@@ -3,8 +3,8 @@
 ## Phases
 
 - [x] **Phase 1: Foundation & Catalog** - Establish secure access and collection management. (completed 2026-06-11)
-- [ ] **Phase 2: Borrowing & Discovery** - Implement the core borrowing lifecycle and search.
-- [ ] **Phase 3: Management & Monitoring** - Provide operational oversight and user notifications.
+- [x] **Phase 2: Borrowing & Discovery** - Implement the core borrowing lifecycle and search. (completed 2026-06-11)
+- [x] **Phase 3: Management & Monitoring** - Provide operational oversight and user notifications. (completed 2026-06-11)
 
 ## Phase Details
 
@@ -47,8 +47,20 @@ Plans:
   2. Student can submit a borrow request, and atomic transactions prevent double-borrowing of the same copy.
   3. Librarian can approve/reject requests and record returns, with availability updating instantly.
 
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+Plans:
+**Wave 1**
+
+- [x] 02-01-PLAN.md — Search & Discovery (CAT-03, CAT-04)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 02-02-PLAN.md — Borrow Request & Loan Model (CIRC-01, CIRC-04)
+
+**Wave 3** *(blocked on Wave 2 completion)*
+
+- [x] 02-03-PLAN.md — Librarian Loan Management (CIRC-02, CIRC-03)
 
 ### Phase 3: Management & Monitoring
 
@@ -62,13 +74,21 @@ Plans:
   2. System automatically identifies and flags overdue books for librarian attention.
   3. Student can view their current loan status and receive basic notifications on request updates.
 
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+Plans:
+**Wave 1**
+
+- [x] 03-01-PLAN.md — Backend Data Foundation (due_date, overdue/stats/my endpoints)
+
+**Wave 2** *(blocked on Wave 1 completion)*
+
+- [x] 03-02-PLAN.md — Dashboard & Student Loans Pages (frontend delivery)
 
 ## Progress Table
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Catalog | 3/3 | Complete   | 2026-06-11 |
-| 2. Borrowing & Discovery | 0/0 | Not started | - |
-| 3. Management & Monitoring | 0/0 | Not started | - |
+| 2. Borrowing & Discovery | 3/3 | Complete   | 2026-06-11 |
+| 3. Management & Monitoring | 2/2 | Complete   | 2026-06-11 |

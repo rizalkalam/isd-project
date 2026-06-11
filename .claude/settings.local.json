@@ -1,4 +1,25 @@
 {
+  "permissions": {
+    "allow": [
+      "Bash(npx gsd-core *)",
+      "Read(.planning/*)",
+      "Write(.planning/*)",
+      "Read(STATE.md)",
+      "Write(STATE.md)",
+      "PowerShell(Stop-Process *)",
+      "Skill(gsd-execute-phase)",
+      "Skill(gsd-plan-phase)",
+      "Bash(node \".claude/gsd-core/bin/gsd-tools.cjs\" query roadmap.update-plan-progress 03 03-02 complete)",
+      "Bash(git add *)",
+      "Bash(git commit -m 'docs\\(phase-03\\): update tracking after wave 2 — all plans complete *)",
+      "Skill(gsd-code-review)"
+    ],
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(.secrets)"
+    ]
+  },
   "hooks": {
     "SessionStart": [
       {
@@ -160,19 +181,5 @@
   },
   "worktree": {
     "baseRef": "head"
-  },
-  "permissions": {
-    "allow": [
-      "Bash(npx gsd-core *)",
-      "Read(.planning/*)",
-      "Write(.planning/*)",
-      "Read(STATE.md)",
-      "Write(STATE.md)"
-    ],
-    "deny": [
-      "Read(.env)",
-      "Read(.env.*)",
-      "Read(.secrets)"
-    ]
   }
 }
