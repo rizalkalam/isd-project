@@ -3,6 +3,7 @@ sqlmodel
 asyncpg
 alembic
 passlib[bcrypt]
+bcrypt==4.0.1
 python-jose[cryptography]
 python-multipart
 pytest

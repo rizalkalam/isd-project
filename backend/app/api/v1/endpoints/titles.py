@@ -1,14 +1,58 @@
-from typing import List
+from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlmodel import select
+from sqlmodel import select, or_, func
 from sqlmodel.ext.asyncio.session import AsyncSession
 from app.db.session import get_session
 from app.api import deps
-from app.models.title import Title, TitleBase, TitleUpdate
+from app.models.title import Title, TitleBase, TitleUpdate, TitleReadWithAvailability
 from app.models.copy import Copy, CopyCreate, CopyStatus
 from app.models.user import UserRole
 
 router = APIRouter()
+
+@router.get("/search", response_model=List[TitleReadWithAvailability])
+async def search_titles(
+    *,
+    session: AsyncSession = Depends(get_session),
+    query: Optional[str] = None,
+    skip: int = 0,
+    limit: int = 100,
+):
+    if not query:
+        statement = select(Title).offset(skip).limit(limit)
+    else:
+        # Search by title, author, or isbn
+        search_filter = or_(
+            Title.title.ilike(f"%{query}%"),
+            Title.author.ilike(f"%{query}%"),
+            Title.isbn.ilike(f"%{query}%"),
+        )
+        statement = select(Title).where(search_filter).offset(skip).limit(limit)
+    
+    result = await session.exec(statement)
+    titles = result.all()
+    
+    # Enrich with availability
+    # In a real system, we'd subtract active loans.
+    # For now, we count copies with status AVAILABLE.
+    enriched_titles = []
+    for title in titles:
+        # Count available copies
+        copies_statement = select(func.count()).select_from(Copy).where(
+            Copy.title_id == title.id,
+            Copy.status == CopyStatus.AVAILABLE
+        )
+        count_result = await session.exec(copies_statement)
+        available_count = count_result.one()
+        
+        enriched_titles.append(
+            TitleReadWithAvailability(
+                **title.dict(),
+                available_copies=available_count
+            )
+        )
+        
+    return enriched_titles
 
 @router.get("/", response_model=List[Title])
 async def get_titles(

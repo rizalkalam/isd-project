@@ -1,8 +1,8 @@
-import { useQuery } from "@tanstack/react-query";
-import api from "../../api/client";
-import { BookCard } from "../../features/catalog/components/BookCard";
-import { useState } from "react";
-import { BookForm } from "../../components/modals/BookForm";
+import { useQuery } from '@tanstack/react-query';
+import api from '../../api/client';
+import { BookCard } from '../../features/catalog/components/BookCard';
+import { useState } from 'react';
+import { BookForm } from '../../components/modals/BookForm';
 
 interface Title {
   id: number;
@@ -18,12 +18,18 @@ export default function Inventory() {
   const [selectedTitle, setSelectedTitle] = useState<Title | undefined>(undefined);
 
   const { data: titles, isLoading, error } = useQuery<Title[]>({
-    queryKey: ["titles"],
+    queryKey: ['titles'],
     queryFn: async () => {
-      const response = await api.get("/titles");
+      const response = await api.get('/titles');
       return response.data;
     },
   });
+
+  const totalBooks = titles?.length ?? 0;
+  const totalCopies = titles?.reduce((sum, title) => sum + (title.copies?.length || 0), 0) ?? 0;
+  const uniqueAuthors = titles
+    ? new Set(titles.map((title) => title.author)).size
+    : 0;
 
   const handleOpenAddModal = () => {
     setSelectedTitle(undefined);
@@ -37,40 +43,67 @@ export default function Inventory() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-900"></div>
+      <div className="page page-dashboard">
+        <div className="loader" />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-8 text-center text-red-600">
-        Error loading inventory: {(error as any).message}
+      <div className="page page-dashboard">
+        <div className="section-card section-card--error">
+          Error loading inventory: {(error as any).message}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold">Library Inventory</h1>
-        <button 
-          onClick={handleOpenAddModal}
-          className="bg-slate-900 text-white px-4 py-2 rounded-md hover:bg-slate-800 transition-colors"
-        >
-          Add New Book
+    <div className="page page-dashboard">
+      <header className="dashboard-header">
+        <div>
+          <p className="eyebrow">Admin Dashboard</p>
+          <h1>Perpustakaan Universitas</h1>
+          <p className="dashboard-description">
+            Kelola koleksi, perbarui judul buku, dan pantau persediaan dengan cepat.
+          </p>
+        </div>
+
+        <button onClick={handleOpenAddModal} className="btn btn-primary btn-large">
+          Tambah Buku Baru
         </button>
+      </header>
+
+      <div className="stats-grid">
+        <div className="stat-card">
+          <p className="stat-value">{totalBooks}</p>
+          <p className="stat-label">Judul Buku</p>
+        </div>
+        <div className="stat-card">
+          <p className="stat-value">{uniqueAuthors}</p>
+          <p className="stat-label">Penulis Unik</p>
+        </div>
+        <div className="stat-card">
+          <p className="stat-value">{totalCopies}</p>
+          <p className="stat-label">Jumlah Salinan</p>
+        </div>
       </div>
 
       {!titles || titles.length === 0 ? (
-        <div className="text-center py-20 bg-slate-50 rounded-lg border-2 border-dashed border-slate-200">
-          <p className="text-slate-500">No books in the catalog yet.</p>
+        <div className="inventory-empty">
+          <h2>Belum ada buku di katalog</h2>
+          <p>Tambahkan buku baru untuk mulai mengisi inventaris perpustakaan.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <div className="inventory-grid">
           {titles.map((title) => (
-            <div key={title.id} onClick={() => handleSelectTitle(title)} className="cursor-pointer">
+            <button
+              key={title.id}
+              type="button"
+              onClick={() => handleSelectTitle(title)}
+              className="inventory-card"
+            >
               <BookCard
                 title={title.title}
                 author={title.author}
@@ -78,16 +111,13 @@ export default function Inventory() {
                 coverUrl={title.cover_url}
                 copyCount={title.copies?.length || 0}
               />
-            </div>
+            </button>
           ))}
         </div>
       )}
 
       {isModalOpen && (
-        <BookForm 
-          onClose={() => setIsModalOpen(false)} 
-          selectedTitle={selectedTitle}
-        />
+        <BookForm onClose={() => setIsModalOpen(false)} selectedTitle={selectedTitle} />
       )}
     </div>
   );
