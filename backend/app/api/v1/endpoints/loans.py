@@ -83,6 +83,104 @@ async def list_loans(
                 status=loan.status,
                 created_at=loan.created_at,
                 updated_at=loan.updated_at,
+                due_date=loan.due_date,
+                book_title=title.title if title else "Unknown",
+                book_author=title.author if title else "Unknown",
+                student_email=user.email if user else "Unknown",
+            )
+        )
+    return enriched
+
+
+@router.get("/overdue", response_model=List[LoanReadWithDetails])
+async def list_overdue_loans(
+    *,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(deps.check_role(UserRole.LIBRARIAN)),
+):
+    now = datetime.utcnow()
+    result = await session.exec(
+        select(Loan).where(
+            Loan.status == LoanStatus.ACTIVE,
+            Loan.due_date < now,
+        )
+    )
+    loans = result.all()
+
+    enriched = []
+    for loan in loans:
+        title_res = await session.exec(select(Title).where(Title.id == loan.title_id))
+        title = title_res.first()
+        user_res = await session.exec(select(User).where(User.id == loan.user_id))
+        user = user_res.first()
+        enriched.append(
+            LoanReadWithDetails(
+                id=loan.id,
+                copy_id=loan.copy_id,
+                title_id=loan.title_id,
+                user_id=loan.user_id,
+                status=loan.status,
+                created_at=loan.created_at,
+                updated_at=loan.updated_at,
+                due_date=loan.due_date,
+                book_title=title.title if title else "Unknown",
+                book_author=title.author if title else "Unknown",
+                student_email=user.email if user else "Unknown",
+            )
+        )
+    return enriched
+
+
+@router.get("/dashboard-stats")
+async def get_dashboard_stats(
+    *,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(deps.check_role(UserRole.LIBRARIAN)),
+):
+    now = datetime.utcnow()
+    result = await session.exec(select(Loan))
+    all_loans = result.all()
+
+    active = sum(1 for loan in all_loans if loan.status == LoanStatus.ACTIVE)
+    pending = sum(1 for loan in all_loans if loan.status == LoanStatus.PENDING)
+    overdue = sum(
+        1 for loan in all_loans
+        if loan.status == LoanStatus.ACTIVE
+        and loan.due_date is not None
+        and loan.due_date < now
+    )
+    total = len(all_loans)
+
+    return {"active": active, "pending": pending, "overdue": overdue, "total": total}
+
+
+@router.get("/my", response_model=List[LoanReadWithDetails])
+async def get_my_loans(
+    *,
+    session: AsyncSession = Depends(get_session),
+    current_user: User = Depends(deps.check_role(UserRole.STUDENT)),
+):
+    result = await session.exec(
+        select(Loan).where(Loan.user_id == current_user.id).order_by(Loan.created_at.desc())
+    )
+    loans = result.all()
+
+    enriched = []
+    for loan in loans:
+        title_res = await session.exec(select(Title).where(Title.id == loan.title_id))
+        title = title_res.first()
+        user_res = await session.exec(select(User).where(User.id == loan.user_id))
+        user = user_res.first()
+        enriched.append(
+            LoanReadWithDetails(
+                id=loan.id,
+                copy_id=loan.copy_id,
+                title_id=loan.title_id,
+                user_id=loan.user_id,
+                status=loan.status,
+                created_at=loan.created_at,
+                updated_at=loan.updated_at,
+                due_date=loan.due_date,
                 book_title=title.title if title else "Unknown",
                 book_author=title.author if title else "Unknown",
                 student_email=user.email if user else "Unknown",
