@@ -2,7 +2,7 @@
 
 ## Phases
 
-- [ ] **Phase 1: Foundation & Catalog** - Establish secure access and collection management.
+- [x] **Phase 1: Foundation & Catalog** - Establish secure access and collection management. (completed 2026-06-11)
 - [ ] **Phase 2: Borrowing & Discovery** - Implement the core borrowing lifecycle and search.
 - [ ] **Phase 3: Management & Monitoring** - Provide operational oversight and user notifications.
 
@@ -25,11 +25,11 @@
 Plans:
 **Wave 1**
 
-- [ ] 01-01-PLAN.md — Foundation & Auth Skeleton
+- [x] 01-01-PLAN.md — Foundation & Auth Skeleton
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
-- [ ] 01-02-PLAN.md — Catalog & Inventory Slice
+- [x] 01-02-PLAN.md — Catalog & Inventory Slice
 
 ### Phase 2: Borrowing & Discovery
 
@@ -65,6 +65,6 @@
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Catalog | 0/2 | Planned    |  |
+| 1. Foundation & Catalog | 2/2 | Complete   | 2026-06-11 |
 | 2. Borrowing & Discovery | 0/0 | Not started | - |
 | 3. Management & Monitoring | 0/0 | Not started | - |
