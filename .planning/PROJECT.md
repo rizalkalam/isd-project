@@ -1,55 +1,52 @@
-# Sistem Epidemiologi (Prediksi Tren Penyakit)
+# Library Management System (LMS)
 
 ## What This Is
 
-Sistem Epidemiologi Klinik adalah aplikasi berbasis web yang membantu klinik memprediksi tren penyakit pasien berdasarkan data pemeriksaan dan riwayat kasus. Aplikasi ini menganalisis lonjakan penyakit endemis musiman sehingga manajemen klinik dapat melakukan penanganan, persiapan logistik, dan pengaturan SDM lebih cepat dan proaktif.
+A web-based Library Management System for Universitas XYZ. It allows students to search the catalog and request borrows, while librarians manage the collection, approve requests, and monitor overdue items via a dashboard.
 
 ## Core Value
 
-Mengubah data rekam medis mentah menjadi sistem kewaspadaan dini yang akurat untuk mencegah keterlambatan respon terhadap lonjakan kasus penyakit.
+Centralizing library operations to replace paper-based logs with an efficient, transparent, and mobile-responsive digital system.
 
 ## Requirements
 
 ### Validated
 
-- ✓ Integrasi dengan data rekam medis (TPS) — existing codebase baseline
-- ✓ Standarisasi diagnosis berbasis ICD-10 — existing codebase baseline
+(None yet — ship to validate)
 
 ### Active
 
-- [ ] Dasbor Analitik Tren Penyakit (Filter Mingguan/Bulanan)
-- [ ] Perhitungan otomatis SLA Waktu Tunggu (Check-in s/d Panggil Dokter)
-- [ ] Role-Based Access Control (Manajer dan Staf)
-- [ ] Export laporan analitik ke format PDF/Excel
-- [ ] Notifikasi/Alert visual untuk tren waktu tunggu yang melampaui ambang batas (> 60 menit)
+- [ ] **F01**: User registration & login (Students/Librarians)
+- [ ] **F02**: Book catalog search and filtering
+- [ ] **F03**: Borrow request submission and approval/rejection
+- [ ] **F04**: Return tracking and availability updates
+- [ ] **F05**: Overdue alerts for late returns
+- [ ] **F06**: Librarian dashboard for loans and requests
+- [ ] **F07**: Book management CRUD for librarians
 
 ### Out of Scope
 
-- Manajemen Inventaris Farmasi (Stok obat/alkes) — Fokus pada analitik epidemiologi, bukan logistik gudang.
-- Logika Resep Racikan — Terlalu kompleks untuk tahap awal analitik.
-- Integrasi Pembayaran Kasir (Billing) — Diluar lingkup surveilans klinis.
-- Aplikasi Mobile Smartphone — Optimasi saat ini fokus pada tampilan Desktop/PC untuk visualisasi data yang padat.
+- **Online Payments**: Fines are tracked but payments are handled elsewhere. — Simplify initial scope.
+- **Inter-library Loans**: Restricted to Universitas XYZ only. — Outside university mandate.
+- **Digital Content**: Physical books only, no e-books. — Focus on physical collection management.
+- **Native Mobile Apps**: Use responsive web design instead. — Lower development and maintenance cost.
 
 ## Context
 
-- Klinik sering terlambat merespons lonjakan penyakit musiman (DBD, ISPA, Tifoid) karena data masih manual/terfragmentasi.
-- Terjadi data silo antara diagnosis klinis dan stok obat yang menyebabkan stockout.
-- Sistem saat ini menggunakan free-text untuk diagnosis, menyebabkan inkonsistensi data (misal: "DBD" vs "Dengue").
+The university currently uses paper ledgers and spreadsheets, leading to inefficiencies and untracked overdue books. The new system must be fast and secure.
 
 ## Constraints
 
-- **Data Privacy**: Data yang ditampilkan di Dasbor MIS Manajer harus anonim (tidak menampilkan identitas pribadi seperti Nama atau NIK).
-- **Access Control**: Sistem MIS hanya bersifat read-only terhadap tabel operasional; tidak boleh mengubah data rekam medis asli.
-- **Platform**: Desktop-First Dashboard untuk optimalisasi visualisasi grafik yang padat.
-- **Data Source**: Diasumsikan staf disiplin memasukkan data secara real-time ke sistem basis data utama (TPS).
+- **Tech Stack**: FastAPI (Python) backend, React frontend, PostgreSQL database. — Team preference and university infrastructure.
+- **Infra**: Must be deployable via Docker to university servers. — Existing deployment standard.
+- **Performance**: Page and search responses must be under 2 seconds. — User experience requirement.
+- **Security**: Authentication and authorization enforced via JWT. — Data protection requirement.
 
 ## Key Decisions
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Desktop-First | Visualisasi grafik data padat membutuhkan layar lebar untuk keterbacaan. | — Pending |
-| Read-Only Access | Menjaga integritas data rekam medis asli di database operasional. | — Pending |
-| ICD-10 Standardization | Mencegah inkonsistensi data diagnosis untuk akurasi laporan tren. | — Pending |
+| Follow sample spec exactly | User wants to follow the built-in tutorial project spec for LMS. | — Pending |
 
 ## Evolution
 
@@ -62,7 +59,7 @@ This document evolves at phase transitions and milestone boundaries.
 4. Decisions to log? → Add to Key Decisions
 5. "What This Is" still accurate? → Update if drifted
 
-**After each milestone** (via `/gsd-complete-milestone`):
+**After each milestone** (via `/gsd:complete-milestone`):
 1. Full review of all sections
 2. Core Value check — still the right priority?
 3. Audit Out of Scope — reasons still valid?
