@@ -79,7 +79,7 @@ Plans:
 Plans:
 **Wave 1**
 
-- [ ] 03-01-PLAN.md — Backend Data Foundation (due_date, overdue/stats/my endpoints)
+- [x] 03-01-PLAN.md — Backend Data Foundation (due_date, overdue/stats/my endpoints)
 
 **Wave 2** *(blocked on Wave 1 completion)*
 
@@ -91,4 +91,4 @@ Plans:
 |-------|----------------|--------|-----------|
 | 1. Foundation & Catalog | 3/3 | Complete   | 2026-06-11 |
 | 2. Borrowing & Discovery | 3/3 | Complete   | 2026-06-11 |
-| 3. Management & Monitoring | 0/2 | Not started | - |
+| 3. Management & Monitoring | 1/2 | In Progress|  |
